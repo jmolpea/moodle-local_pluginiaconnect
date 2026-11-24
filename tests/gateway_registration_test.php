@@ -34,6 +34,10 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/local/pluginiaconnect/tests/fixtures/integration_records.php');
 
+#[\PHPUnit\Framework\Attributes\CoversClass(registration::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(site_identity::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(verify_endpoint::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(http_transport::class)]
 /**
  * Tests of the plugin side of the gateway: registration, removal and the domain verification endpoint.
  *
@@ -48,10 +52,6 @@ require_once($CFG->dirroot . '/local/pluginiaconnect/tests/fixtures/integration_
  * @covers     \local_pluginiaconnect\local\gateway\verify_endpoint
  * @covers     \local_pluginiaconnect\local\gateway\http_transport
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(registration::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(site_identity::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(verify_endpoint::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(http_transport::class)]
 final class gateway_registration_test extends \advanced_testcase {
     /** @var string Site identifier the fake gateway hands out. */
     private const SITE_ID = '0f8fad5b-d9cb-469f-a165-70867728950e';

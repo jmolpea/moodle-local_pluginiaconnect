@@ -22,6 +22,8 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/../fixtures/integration_records.php');
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\task\cleanup_expired::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\task\prune_audit::class)]
 /**
  * Tests of the scheduled tasks.
  *
@@ -31,8 +33,6 @@ require_once(__DIR__ . '/../fixtures/integration_records.php');
  * @covers     \local_pluginiaconnect\task\cleanup_expired
  * @covers     \local_pluginiaconnect\task\prune_audit
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\task\cleanup_expired::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\task\prune_audit::class)]
 final class tasks_test extends \advanced_testcase {
     /**
      * Pending actions past their time are expired and lose their stored arguments.

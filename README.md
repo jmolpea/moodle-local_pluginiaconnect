@@ -132,7 +132,8 @@ Actions that change something are switched off after installing. Enable them one
 
 - Issues: the issue tracker of this repository.
 - Security problems: see [SECURITY.md](SECURITY.md). Do not open a public issue.
-- Configuration manual: <https://claude.ai/artifact/XSFJRPaBcavfAJyFBo7K2Y>
+- Configuration manual: linked from the top of the plugin's settings page
+  (*Site administration → Plugins → Local plugins → Pluginia Connect*).
 
 ## Licence
 

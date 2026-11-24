@@ -25,6 +25,10 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/local/pluginiaconnect/tests/fixtures/mcp_fixture.php');
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\mcp\server::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\mcp\protocol::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\mcp\jsonrpc::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\user_session::class)]
 /**
  * MCP protocol and endpoint authentication.
  *
@@ -36,10 +40,6 @@ require_once($CFG->dirroot . '/local/pluginiaconnect/tests/fixtures/mcp_fixture.
  * @covers     \local_pluginiaconnect\local\mcp\jsonrpc
  * @covers     \local_pluginiaconnect\local\user_session
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\mcp\server::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\mcp\protocol::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\mcp\jsonrpc::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\user_session::class)]
 final class mcp_protocol_test extends \advanced_testcase {
     /** @var string Access token of the test user. */
     private string $token;

@@ -29,6 +29,11 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/fixtures/oauth_helper.php');
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\code_service::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\token_service::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\token_endpoint::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\revoke_endpoint::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\grant_context::class)]
 /**
  * Authorization codes, tokens, refresh rotation, revocation and the token and revocation endpoints.
  *
@@ -41,11 +46,6 @@ require_once(__DIR__ . '/fixtures/oauth_helper.php');
  * @covers \local_pluginiaconnect\local\oauth\revoke_endpoint
  * @covers \local_pluginiaconnect\local\oauth\grant_context
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\code_service::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\token_service::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\token_endpoint::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\revoke_endpoint::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\grant_context::class)]
 final class oauth_token_test extends \advanced_testcase {
     use oauth_helper;
 

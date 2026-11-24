@@ -16,6 +16,18 @@
 
 namespace local_pluginiaconnect\event;
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\event_base::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\event\connection_granted::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\event\connection_revoked::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\event\token_reuse_detected::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\event\tool_called::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\event\tool_denied::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\event\action_confirmation_requested::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\event\action_approved::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\event\action_rejected::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\event\site_registered::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\event\site_unregistered::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\event\settings_killswitch_changed::class)]
 /**
  * Tests of the shape and validation of the plugin events.
  *
@@ -35,18 +47,6 @@ namespace local_pluginiaconnect\event;
  * @covers     \local_pluginiaconnect\event\site_unregistered
  * @covers     \local_pluginiaconnect\event\settings_killswitch_changed
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\event_base::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\event\connection_granted::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\event\connection_revoked::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\event\token_reuse_detected::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\event\tool_called::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\event\tool_denied::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\event\action_confirmation_requested::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\event\action_approved::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\event\action_rejected::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\event\site_registered::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\event\site_unregistered::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\event\settings_killswitch_changed::class)]
 final class events_test extends \advanced_testcase {
     /**
      * Every event with the "other" data it needs and whether it is about an object and a user.

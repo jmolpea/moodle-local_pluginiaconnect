@@ -27,6 +27,13 @@ global $CFG;
 require_once($CFG->dirroot . '/local/pluginiaconnect/tests/fixtures/mcp_fixture.php');
 require_once($CFG->libdir . '/gradelib.php');
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\base_tool::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\read\get_connection_info::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\read\list_my_courses::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\read\get_course_outline::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\read\list_upcoming_deadlines::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\read\get_my_grades::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\mcp\call_pipeline::class)]
 /**
  * The five tools of phase 1, run through the whole pipeline with real users, roles and courses.
  *
@@ -41,13 +48,6 @@ require_once($CFG->libdir . '/gradelib.php');
  * @covers     \local_pluginiaconnect\local\tool\read\get_my_grades
  * @covers     \local_pluginiaconnect\local\mcp\call_pipeline
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\base_tool::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\read\get_connection_info::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\read\list_my_courses::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\read\get_course_outline::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\read\list_upcoming_deadlines::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\read\get_my_grades::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\mcp\call_pipeline::class)]
 final class mcp_tools_test extends \advanced_testcase {
     /** @var string[] Scopes of a read-only student connection. */
     private const READ = ['profile', 'courses.read', 'grades.read'];

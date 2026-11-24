@@ -73,7 +73,7 @@ final class assign_helper {
     /**
      * Students allocated to the caller as marker, or null when marker allocation does not limit the caller.
      *
-     * Up to Moodle 5.0 the allocation is a column of the user flags; later versions keep it in its own table.
+     * Up to Moodle 5.1 the allocation is a column of the user flags; later versions keep it in its own table.
      *
      * @param \assign $assign Assignment.
      * @param \stdClass $caller User the call runs as.
@@ -89,11 +89,14 @@ final class assign_helper {
             return null;
         }
         $params = ['assignment' => $instance->id, 'marker' => $caller->id];
-        if ($DB->get_manager()->table_exists('assign_allocated_marker')) {
+        $dbman = $DB->get_manager();
+        if ($dbman->table_exists('assign_allocated_marker')) {
+            // Optional markers arrived after the table: Moodle 5.2 has the table without them.
+            $optional = $dbman->field_exists('assign_allocated_marker', 'optional') ? ' AND (optional = 0 OR enabled = 1)' : '';
             $ids = $DB->get_fieldset_select(
                 'assign_allocated_marker',
                 'student',
-                'assignment = :assignment AND marker = :marker AND (optional = 0 OR enabled = 1)',
+                'assignment = :assignment AND marker = :marker' . $optional,
                 $params
             );
         } else {

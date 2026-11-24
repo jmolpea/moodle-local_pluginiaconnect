@@ -43,6 +43,16 @@ require_once(__DIR__ . '/fixtures/oauth_helper.php');
 require_once($CFG->dirroot . '/local/pluginiaconnect/tests/fixtures/mcp_fixture.php');
 require_once($CFG->dirroot . '/local/pluginiaconnect/tests/fixtures/mcp_test_tools.php');
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\mcp\call_pipeline::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\policy\decision::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\policy\eligibility::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\token_endpoint::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\revoke_endpoint::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\token_service::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\client_repository::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\cimd_fetcher::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\guardrail\rate_limiter::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\audit\logger::class)]
 /**
  * Regression tests of the findings of the independent security review of phase 1.
  *
@@ -63,16 +73,6 @@ require_once($CFG->dirroot . '/local/pluginiaconnect/tests/fixtures/mcp_test_too
  * @covers     \local_pluginiaconnect\local\guardrail\rate_limiter
  * @covers     \local_pluginiaconnect\local\audit\logger
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\mcp\call_pipeline::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\policy\decision::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\policy\eligibility::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\token_endpoint::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\revoke_endpoint::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\token_service::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\client_repository::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\cimd_fetcher::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\guardrail\rate_limiter::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\audit\logger::class)]
 final class security_review_test extends \advanced_testcase {
     use oauth_helper;
 

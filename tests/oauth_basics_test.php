@@ -31,6 +31,12 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/fixtures/oauth_helper.php');
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\pkce::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\redirect_policy::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\server_metadata::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\metadata_endpoint::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\http\origin_guard::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\http\endpoint::class)]
 /**
  * PKCE, redirect policy, origin guard, metadata documents and endpoint start-up.
  *
@@ -44,12 +50,6 @@ require_once(__DIR__ . '/fixtures/oauth_helper.php');
  * @covers \local_pluginiaconnect\local\http\origin_guard
  * @covers \local_pluginiaconnect\local\http\endpoint
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\pkce::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\redirect_policy::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\server_metadata::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\metadata_endpoint::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\http\origin_guard::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\http\endpoint::class)]
 final class oauth_basics_test extends \advanced_testcase {
     use oauth_helper;
 

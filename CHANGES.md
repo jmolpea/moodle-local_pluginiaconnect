@@ -39,6 +39,8 @@ Alpha. Not for production sites.
 - "List submissions to grade" says when a very large course was only partly examined (`scan_incomplete`).
 - Fix: announcements and grade feedback are now cleaned of hidden text from the stored text. They were
   cleaned from text the site had already filtered, which no longer carried the styles that mark hidden text.
+- Fix: on Moodle 5.2, with marker allocation, the assignment actions failed with an internal error for a
+  marker (5.2 keeps allocations in their own table but without optional markers, which came in 5.3).
 - Catalogue: 31 actions.
 - Second security review (details in the gateway repository, `docs/reviews/security-review-phase3.md`):
   - The assistant named when a connection is made through the gateway is now confirmed by the gateway at the

@@ -22,6 +22,11 @@ use local_pluginiaconnect\local\http\request;
 use local_pluginiaconnect\local\http\response;
 use local_pluginiaconnect\local\urls;
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\config::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\urls::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\http\request::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\http\response::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\guardrail\rate_limiter::class)]
 /**
  * Tests of the shared building blocks: settings access, URLs, HTTP request and response, rate limiter.
  *
@@ -34,11 +39,6 @@ use local_pluginiaconnect\local\urls;
  * @covers     \local_pluginiaconnect\local\http\response
  * @covers     \local_pluginiaconnect\local\guardrail\rate_limiter
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\config::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\urls::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\http\request::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\http\response::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\guardrail\rate_limiter::class)]
 final class core_test extends \advanced_testcase {
     /**
      * Factory defaults are the secure ones and numeric settings cannot leave their bounds.

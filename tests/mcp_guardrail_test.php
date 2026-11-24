@@ -20,6 +20,9 @@ use local_pluginiaconnect\local\guardrail\output_filter;
 use local_pluginiaconnect\local\guardrail\text_sanitizer;
 use local_pluginiaconnect\local\mcp\schema_validator;
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\guardrail\output_filter::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\guardrail\text_sanitizer::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\mcp\schema_validator::class)]
 /**
  * Output filter, text sanitizer and argument validator.
  *
@@ -30,9 +33,6 @@ use local_pluginiaconnect\local\mcp\schema_validator;
  * @covers     \local_pluginiaconnect\local\guardrail\text_sanitizer
  * @covers     \local_pluginiaconnect\local\mcp\schema_validator
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\guardrail\output_filter::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\guardrail\text_sanitizer::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\mcp\schema_validator::class)]
 final class mcp_guardrail_test extends \advanced_testcase {
     /**
      * Hidden content that must never reach the output.

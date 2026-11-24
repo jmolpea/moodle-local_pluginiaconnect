@@ -29,6 +29,11 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/fixtures/oauth_helper.php');
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\cimd_fetcher::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\client_repository::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\client::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\client_authenticator::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\register_endpoint::class)]
 /**
  * Client identification: metadata documents, dynamic registration and client authentication.
  *
@@ -41,11 +46,6 @@ require_once(__DIR__ . '/fixtures/oauth_helper.php');
  * @covers \local_pluginiaconnect\local\oauth\client_authenticator
  * @covers \local_pluginiaconnect\local\oauth\register_endpoint
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\cimd_fetcher::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\client_repository::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\client::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\client_authenticator::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\register_endpoint::class)]
 final class oauth_client_test extends \advanced_testcase {
     use oauth_helper;
 

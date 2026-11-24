@@ -30,6 +30,13 @@ global $CFG;
 require_once(__DIR__ . '/fixtures/mcp_fixture.php');
 require_once($CFG->dirroot . '/mod/assign/locallib.php');
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\read\get_course_outline::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\read\get_assignment_details::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\read\get_submission::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\read\search_courses::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\assign_helper::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\mcp\call_pipeline::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\write\enrol_users_in_course::class)]
 /**
  * Regression tests for the verification pass of the second security review (N1 to N3 and the rest of L1).
  * The cases of the text sanitiser itself are in text_sanitizer_test.php; N5 is in privacy/provider_test.php.
@@ -45,13 +52,6 @@ require_once($CFG->dirroot . '/mod/assign/locallib.php');
  * @covers     \local_pluginiaconnect\local\mcp\call_pipeline
  * @covers     \local_pluginiaconnect\local\tool\write\enrol_users_in_course
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\read\get_course_outline::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\read\get_assignment_details::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\read\get_submission::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\read\search_courses::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\assign_helper::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\mcp\call_pipeline::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\write\enrol_users_in_course::class)]
 final class security_review2_verification_test extends \advanced_testcase {
     /** @var \stdClass Course. */
     private \stdClass $course;

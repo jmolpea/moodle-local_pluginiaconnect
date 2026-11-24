@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/../fixtures/integration_records.php');
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\privacy\provider::class)]
 /**
  * Tests of the Privacy API implementation.
  *
@@ -35,7 +36,6 @@ require_once(__DIR__ . '/../fixtures/integration_records.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \local_pluginiaconnect\privacy\provider
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\privacy\provider::class)]
 final class provider_test extends \core_privacy\tests\provider_testcase {
     /** @var string[] Tables of the plugin that hold a user id. */
     private const USER_TABLES = ['grant', 'authcode', 'audit', 'action'];

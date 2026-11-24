@@ -29,6 +29,10 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/fixtures/oauth_helper.php');
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\authorization_request::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\oauth_exception::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\output\consent_page::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\policy\scope::class)]
 /**
  * Validation of authorization requests, granted scopes and consent page data.
  *
@@ -40,10 +44,6 @@ require_once(__DIR__ . '/fixtures/oauth_helper.php');
  * @covers \local_pluginiaconnect\output\consent_page
  * @covers \local_pluginiaconnect\local\policy\scope
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\authorization_request::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\oauth_exception::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\output\consent_page::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\policy\scope::class)]
 final class oauth_authorization_request_test extends \advanced_testcase {
     use oauth_helper;
 

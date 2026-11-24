@@ -21,6 +21,10 @@ use local_pluginiaconnect\local\policy\eligibility;
 use local_pluginiaconnect\local\policy\profile;
 use local_pluginiaconnect\local\policy\scope;
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\policy\eligibility::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\policy\context_filter::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\policy\scope::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\policy\profile::class)]
 /**
  * Tests of profile eligibility, the site scope filter and scope granting.
  *
@@ -34,10 +38,6 @@ use local_pluginiaconnect\local\policy\scope;
  * @covers     \local_pluginiaconnect\local\policy\scope
  * @covers     \local_pluginiaconnect\local\policy\profile
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\policy\eligibility::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\policy\context_filter::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\policy\scope::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\policy\profile::class)]
 final class eligibility_test extends \advanced_testcase {
     /**
      * Enables every profile, so that each test only switches off what it studies.

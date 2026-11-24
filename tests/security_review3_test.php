@@ -38,6 +38,13 @@ global $CFG;
 require_once(__DIR__ . '/fixtures/oauth_helper.php');
 require_once(__DIR__ . '/fixtures/mcp_fixture.php');
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\read\list_course_participants::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\tool_definition::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\audit\logger::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\guardrail\exposure_budget::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\observer::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\output\consent_page::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\urls::class)]
 /**
  * Regression tests for the third security review and the local penetration test.
  *
@@ -57,13 +64,6 @@ require_once(__DIR__ . '/fixtures/mcp_fixture.php');
  * @covers     \local_pluginiaconnect\output\consent_page
  * @covers     \local_pluginiaconnect\local\urls
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\read\list_course_participants::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\tool_definition::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\audit\logger::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\guardrail\exposure_budget::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\observer::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\output\consent_page::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\urls::class)]
 final class security_review3_test extends \advanced_testcase {
     use oauth_helper;
 

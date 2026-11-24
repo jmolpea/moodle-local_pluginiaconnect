@@ -28,6 +28,12 @@ global $CFG;
 require_once($CFG->dirroot . '/local/pluginiaconnect/tests/fixtures/mcp_fixture.php');
 require_once($CFG->dirroot . '/local/pluginiaconnect/tests/fixtures/mcp_test_tools.php');
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\mcp\call_pipeline::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\policy\decision::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\policy\decision_result::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\policy\site_policy::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\audit\logger::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\user_session::class)]
 /**
  * The call pipeline, the decision function and the site policy.
  *
@@ -41,12 +47,6 @@ require_once($CFG->dirroot . '/local/pluginiaconnect/tests/fixtures/mcp_test_too
  * @covers     \local_pluginiaconnect\local\audit\logger
  * @covers     \local_pluginiaconnect\local\user_session
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\mcp\call_pipeline::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\policy\decision::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\policy\decision_result::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\policy\site_policy::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\audit\logger::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\user_session::class)]
 final class mcp_pipeline_test extends \advanced_testcase {
     /** @var \stdClass Course. */
     private \stdClass $course;

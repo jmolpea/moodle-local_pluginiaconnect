@@ -33,6 +33,10 @@ require_once($CFG->dirroot . '/local/pluginiaconnect/tests/fixtures/mcp_fixture.
 require_once($CFG->dirroot . '/local/pluginiaconnect/tests/fixtures/mcp_test_tools.php');
 require_once($CFG->libdir . '/adminlib.php');
 
+#[\PHPUnit\Framework\Attributes\CoversClass(connections::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(report::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(tools_matrix::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(observer::class)]
 /**
  * Tests of what the user and administrator pages rely on: listing and revoking
  * connections, the audit report, the tool matrix, page permissions and the
@@ -46,10 +50,6 @@ require_once($CFG->libdir . '/adminlib.php');
  * @covers     \local_pluginiaconnect\local\tools_matrix
  * @covers     \local_pluginiaconnect\observer
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(connections::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(report::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(tools_matrix::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(observer::class)]
 final class phase2_pages_test extends \advanced_testcase {
     /**
      * Each test starts clean.

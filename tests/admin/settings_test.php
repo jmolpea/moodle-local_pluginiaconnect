@@ -19,6 +19,9 @@ namespace local_pluginiaconnect\admin;
 use local_pluginiaconnect\event\settings_killswitch_changed;
 use local_pluginiaconnect\local\config;
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\admin\setting_bounded_int::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\admin\setting_list::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\admin\callbacks::class)]
 /**
  * Tests of the admin settings: limits, list validation and reactions to changes.
  *
@@ -29,9 +32,6 @@ use local_pluginiaconnect\local\config;
  * @covers     \local_pluginiaconnect\admin\setting_list
  * @covers     \local_pluginiaconnect\admin\callbacks
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\admin\setting_bounded_int::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\admin\setting_list::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\admin\callbacks::class)]
 final class settings_test extends \advanced_testcase {
     /**
      * Every bounded setting has a factory default inside its limits.

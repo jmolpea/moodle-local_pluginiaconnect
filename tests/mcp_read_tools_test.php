@@ -29,6 +29,10 @@ require_once($CFG->dirroot . '/local/pluginiaconnect/tests/fixtures/mcp_fixture.
 require_once($CFG->libdir . '/gradelib.php');
 require_once($CFG->dirroot . '/mod/assign/locallib.php');
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\people::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\assign_helper::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\guardrail\exposure_budget::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\mcp\call_pipeline::class)]
 /**
  * The read tools of phase 2, run through the whole pipeline with real users, roles, groups and courses.
  *
@@ -40,10 +44,6 @@ require_once($CFG->dirroot . '/mod/assign/locallib.php');
  * @covers     \local_pluginiaconnect\local\guardrail\exposure_budget
  * @covers     \local_pluginiaconnect\local\mcp\call_pipeline
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\people::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\assign_helper::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\guardrail\exposure_budget::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\mcp\call_pipeline::class)]
 final class mcp_read_tools_test extends \advanced_testcase {
     /** @var string[] Every read scope. */
     private const SCOPES = [
@@ -670,7 +670,8 @@ final class mcp_read_tools_test extends \advanced_testcase {
         $this->assertCount(50, $standard['plugins']);
 
         foreach ([$status, $tasks, $plugins] as $result) {
-            $json = json_encode($result->envelope);
+            // The site address is public and may contain the database name (both "moodle" on CI): leave it out.
+            $json = str_replace(trim(json_encode($CFG->wwwroot), '"'), '', json_encode($result->envelope));
             $secrets = [$CFG->dataroot, $CFG->dirroot, 'SMTP-SECRET-VALUE', $CFG->release, (string) $CFG->version, $CFG->dbname];
             foreach ($secrets as $secret) {
                 $this->assertStringNotContainsString(json_encode($secret), '"' . $json . '"');

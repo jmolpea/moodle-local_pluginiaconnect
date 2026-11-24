@@ -19,6 +19,8 @@ namespace local_pluginiaconnect\local;
 use local_pluginiaconnect\local\http\request;
 use local_pluginiaconnect\local\http\selfcheck;
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\health::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\http\selfcheck::class)]
 /**
  * Tests of the diagnostics checks and of the loop-back probe.
  *
@@ -28,8 +30,6 @@ use local_pluginiaconnect\local\http\selfcheck;
  * @covers     \local_pluginiaconnect\local\health
  * @covers     \local_pluginiaconnect\local\http\selfcheck
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\health::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\http\selfcheck::class)]
 final class health_test extends \advanced_testcase {
     /**
      * Asserts the shape and the status of a result.

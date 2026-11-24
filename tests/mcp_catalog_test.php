@@ -21,6 +21,9 @@ use local_pluginiaconnect\local\policy\profile;
 use local_pluginiaconnect\local\policy\scope;
 use local_pluginiaconnect\local\tool\tool;
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\mcp\tool_registry::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\tool_definition::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\tool_requirement::class)]
 /**
  * The catalogue: definitions, descriptions and the generated file.
  *
@@ -31,9 +34,6 @@ use local_pluginiaconnect\local\tool\tool;
  * @covers     \local_pluginiaconnect\local\tool\tool_definition
  * @covers     \local_pluginiaconnect\local\tool\tool_requirement
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\mcp\tool_registry::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\tool_definition::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\tool\tool_requirement::class)]
 final class mcp_catalog_test extends \advanced_testcase {
     /** @var string[] Patterns that would turn a description into an instruction for the model. */
     private const INSTRUCTION_PATTERNS = [

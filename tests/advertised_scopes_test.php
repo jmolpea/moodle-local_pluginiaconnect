@@ -33,6 +33,10 @@ global $CFG;
 require_once(__DIR__ . '/fixtures/oauth_helper.php');
 require_once(__DIR__ . '/fixtures/mcp_fixture.php');
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\policy\site_policy::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\server_metadata::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\mcp\server::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\output\consent_page::class)]
 /**
  * Scopes the site advertises to assistants (setting "advertisedscopes"): the 401 challenge, the metadata
  * documents, and the consent chain when an assistant asks for the whole advertised list.
@@ -48,10 +52,6 @@ require_once(__DIR__ . '/fixtures/mcp_fixture.php');
  * @covers     \local_pluginiaconnect\local\mcp\server
  * @covers     \local_pluginiaconnect\output\consent_page
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\policy\site_policy::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\oauth\server_metadata::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\mcp\server::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\output\consent_page::class)]
 final class advertised_scopes_test extends \advanced_testcase {
     use oauth_helper;
 

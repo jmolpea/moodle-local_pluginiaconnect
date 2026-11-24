@@ -18,6 +18,7 @@ namespace local_pluginiaconnect;
 
 use local_pluginiaconnect\local\guardrail\text_sanitizer;
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\guardrail\text_sanitizer::class)]
 /**
  * Hidden-text removal: every bypass found by the independent security review (finding M3),
  * and the visible content that must survive.
@@ -27,7 +28,6 @@ use local_pluginiaconnect\local\guardrail\text_sanitizer;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \local_pluginiaconnect\local\guardrail\text_sanitizer
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\guardrail\text_sanitizer::class)]
 final class text_sanitizer_test extends \advanced_testcase {
     /**
      * Markup in which the word SECRET cannot be seen by a reader.

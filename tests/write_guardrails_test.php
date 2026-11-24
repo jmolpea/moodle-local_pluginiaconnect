@@ -33,6 +33,11 @@ global $CFG;
 require_once($CFG->dirroot . '/local/pluginiaconnect/tests/fixtures/mcp_fixture.php');
 require_once($CFG->dirroot . '/local/pluginiaconnect/tests/fixtures/mcp_test_tools.php');
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\guardrail\action_store::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\guardrail\confirmation_service::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\guardrail\approval_service::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\guardrail\idempotency_store::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\mcp\call_pipeline::class)]
 /**
  * Tests of the write guardrails: two-step confirmation, approval on the site, idempotency
  * keys, the cap of pending actions and the floor imposed on unattended assistants.
@@ -48,11 +53,6 @@ require_once($CFG->dirroot . '/local/pluginiaconnect/tests/fixtures/mcp_test_too
  * @covers     \local_pluginiaconnect\local\guardrail\idempotency_store
  * @covers     \local_pluginiaconnect\local\mcp\call_pipeline
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\guardrail\action_store::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\guardrail\confirmation_service::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\guardrail\approval_service::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\guardrail\idempotency_store::class)]
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\local\mcp\call_pipeline::class)]
 final class write_guardrails_test extends \advanced_testcase {
     /** @var \stdClass Course the probe acts on. */
     private \stdClass $course;

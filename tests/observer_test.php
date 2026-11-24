@@ -24,6 +24,7 @@ global $CFG;
 require_once(__DIR__ . '/fixtures/integration_records.php');
 require_once($CFG->dirroot . '/cohort/lib.php');
 
+#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\observer::class)]
 /**
  * Tests of the reactions to core events.
  *
@@ -32,7 +33,6 @@ require_once($CFG->dirroot . '/cohort/lib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \local_pluginiaconnect\observer
  */
-#[\PHPUnit\Framework\Attributes\CoversClass(\local_pluginiaconnect\observer::class)]
 final class observer_test extends \advanced_testcase {
     /**
      * Number of active grants of a user.
