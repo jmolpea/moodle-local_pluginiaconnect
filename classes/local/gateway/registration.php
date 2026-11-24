@@ -93,7 +93,7 @@ final class registration {
     /**
      * Registers the site.
      *
-     * @param string $licencekey Licence key typed by the administrator.
+     * @param string $licencekey Licence key typed by the administrator; empty when the gateway asks for none.
      * @param bool $nounder13 Declaration: the site is not directed to children under 13.
      * @param bool $terms Declaration: terms and data processing agreement accepted.
      * @param transport|null $transport Transport to use; the HTTPS one by default.
@@ -105,7 +105,7 @@ final class registration {
         if (!$terms) {
             return [false, 'register_error_terms', null];
         }
-        if (strlen($licencekey) < 8 || strlen($licencekey) > 200) {
+        if ($licencekey !== '' && (strlen($licencekey) < 8 || strlen($licencekey) > 200)) {
             return [false, 'register_error_licence', null];
         }
         if (self::blockers()) {

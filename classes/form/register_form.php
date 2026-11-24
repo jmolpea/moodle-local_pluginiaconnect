@@ -40,7 +40,6 @@ class register_form extends \moodleform {
 
         $mform->addElement('passwordunmask', 'licencekey', get_string('register_licencekey', $component), ['size' => 50]);
         $mform->setType('licencekey', PARAM_RAW_TRIMMED);
-        $mform->addRule('licencekey', get_string('required'), 'required', null, 'client');
         $mform->addHelpButton('licencekey', 'register_licencekey', $component);
 
         $mform->addElement('advcheckbox', 'nounder13', get_string('register_nounder13', $component));
@@ -52,7 +51,7 @@ class register_form extends \moodleform {
     }
 
     /**
-     * Validation of the declarations and of the shape of the licence key.
+     * Validation of the declarations and of the shape of the licence key, which may be left empty.
      *
      * @param array $data Submitted data.
      * @param array $files Submitted files.
@@ -62,7 +61,7 @@ class register_form extends \moodleform {
         $errors = parent::validation($data, $files);
         $component = 'local_pluginiaconnect';
         $length = strlen(trim((string) ($data['licencekey'] ?? '')));
-        if ($length < 8 || $length > 200) {
+        if ($length !== 0 && ($length < 8 || $length > 200)) {
             $errors['licencekey'] = get_string('register_error_licence', $component);
         }
         if (empty($data['terms'])) {

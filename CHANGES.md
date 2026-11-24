@@ -4,6 +4,10 @@
 
 Alpha. Not for production sites.
 
+- Gateway registration: the licence key is optional. For now the Pluginia Connect gateway is free and
+  needs no key, so the administrator leaves the field empty; a key typed anyway is still checked for
+  length and sent. Everything else is unchanged: the declarations, the proof that the site controls its
+  address and the removal from the gateway.
 - New setting "Permissions an assistant asks for when it connects" (Sign-in and tokens). By default the
   site now advertises, in the 401 challenge and in `scopes_supported` of its metadata, every scope with at
   least one action switched on for an allowed profile (no scope that changes data in read-only mode), not

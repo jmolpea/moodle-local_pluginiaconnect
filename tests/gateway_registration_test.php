@@ -199,6 +199,21 @@ final class gateway_registration_test extends \advanced_testcase {
     }
 
     /**
+     * While the gateway is free the key is left empty: the document carries an empty key and the site registers.
+     */
+    public function test_register_without_licence_key(): void {
+        $gateway = $this->gateway();
+        $sink = $this->redirectEvents();
+        [$done, $message] = registration::register('  ', true, true, $gateway);
+        $sink->close();
+
+        $this->assertTrue($done, $message);
+        $this->assertSame('register_done', $message);
+        $this->assertSame('', $gateway->posts[0][1]['licence_key']);
+        $this->assertSame(site_identity::STATE_REGISTERED, site_identity::state());
+    }
+
+    /**
      * Failures of the gateway change nothing on the site.
      *
      * @dataProvider failure_provider
@@ -254,6 +269,7 @@ final class gateway_registration_test extends \advanced_testcase {
         $gateway = $this->gateway();
         $this->assertSame('register_error_terms', registration::register('LICENCE-KEY-0001', true, false, $gateway)[1]);
         $this->assertSame('register_error_licence', registration::register('short', true, true, $gateway)[1]);
+        $this->assertSame('register_error_licence', registration::register(str_repeat('k', 201), true, true, $gateway)[1]);
 
         set_config('allowstudentprofile', 1, 'local_pluginiaconnect');
         $this->assertSame('register_error_minors', registration::register('LICENCE-KEY-0001', false, true, $gateway)[1]);
