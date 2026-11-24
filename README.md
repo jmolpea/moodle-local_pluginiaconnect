@@ -68,7 +68,8 @@ Everything is off after installation.
    - **Direct connections**: the assistant talks to this site. No third party is involved other
      than the provider of the assistant.
    - **Pluginia Connect gateway**: a single connection address for assistant directories. It needs
-     the site to be registered with the gateway (the service is not in production yet).
+     the site to be registered with the gateway (*Gateway registration*). The gateway is optional and,
+     for now, free of charge: no licence key is needed.
 2. *Settings → Profiles*: choose which profiles are offered. The student profile is off by default;
    enabling it carries a declaration about minors (see the setting description).
 3. *Settings → Scope*: limit the connector to some course categories, or exclude categories,
@@ -87,8 +88,8 @@ connection and switches the connector off.
   what that user may see on this site. That provider handles it under its own terms.
 - **The Pluginia Connect gateway** (`connect.pluginia.es`, operated by RSMAX Consulting S.L.), only
   if the site administrator registers the site and enables it. It carries requests and answers
-  and does not store their content. It needs a paid subscription held by the institution. The
-  plugin works without it in direct mode.
+  and does not store their content. It is optional and, for now, free of charge. The plugin works
+  without it in direct mode.
 
 The plugin itself contains no licence check.
 
@@ -121,8 +122,8 @@ What is still pending:
 - An independent security audit.
 - The first run of the continuous integration on GitHub Actions, which also runs the template and
   JavaScript checks: those have not been run anywhere yet.
-- The gateway service itself is not in production yet, so registration cannot be completed
-  against it.
+- No AI assistant has been connected through the gateway yet: it is deployed, but the first real
+  connection has only been made in direct mode.
 
 Actions that change something are switched off after installing. Enable them one by one on
 "Actions by profile", and read "How changes are approved" above first.
@@ -131,7 +132,7 @@ Actions that change something are switched off after installing. Enable them one
 
 - Issues: the issue tracker of this repository.
 - Security problems: see [SECURITY.md](SECURITY.md). Do not open a public issue.
-- Documentation: <https://pluginia.es/connect/docs>
+- Configuration manual: <https://claude.ai/artifact/XSFJRPaBcavfAJyFBo7K2Y>
 
 ## Licence
 
