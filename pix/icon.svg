@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" role="img" aria-label="Pluginia Connect">
+  <circle cx="6" cy="12" r="3" fill="none" stroke="#0a0a0a" stroke-width="2"/>
+  <circle cx="18" cy="12" r="3" fill="#00a8d6" stroke="#00a8d6" stroke-width="2"/>
+  <path d="M9 12h6" stroke="#0a0a0a" stroke-width="2" stroke-linecap="round"/>
+</svg>

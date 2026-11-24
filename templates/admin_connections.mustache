@@ -1,0 +1,112 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_pluginiaconnect/admin_connections
+
+    Active connections of the whole site, for administrators.
+
+    Context variables required for this template:
+    * total - Text with the number of connections.
+    * hasrows - Whether there is any row.
+    * rows - List: id, userid, userfullname, userurl, clientid, clientname, clienthost, hasactor, actorlabel,
+      profilename, levelname, created, lastused.
+    * actionurl - URL the forms post to.
+    * sesskey - Session key.
+
+    Example context (json):
+    {
+        "total": "1 active connection",
+        "hasrows": true,
+        "rows": [
+            {
+                "id": 3,
+                "userid": 5,
+                "userfullname": "Ana Teacher",
+                "userurl": "https://example.com/user/profile.php?id=5",
+                "clientid": 2,
+                "clientname": "Claude",
+                "clienthost": "claude.ai",
+                "hasactor": false,
+                "actorlabel": "",
+                "profilename": "Teacher",
+                "levelname": "Read only",
+                "created": "24/11/26, 10:00",
+                "lastused": "Never"
+            }
+        ],
+        "actionurl": "https://example.com/local/pluginiaconnect/admin/connections.php",
+        "sesskey": "abc"
+    }
+}}
+<div class="local-pluginiaconnect-adminconnections">
+    <p>{{total}}</p>
+    {{^hasrows}}
+    <p class="alert alert-info">{{#str}}adminconnections_none, local_pluginiaconnect{{/str}}</p>
+    {{/hasrows}}
+    {{#hasrows}}
+    <table class="table generaltable" data-region="pc-adminconnections">
+        <caption class="sr-only visually-hidden">{{#str}}adminconnections, local_pluginiaconnect{{/str}}</caption>
+        <thead>
+            <tr>
+                <th scope="col">{{#str}}connections_col_user, local_pluginiaconnect{{/str}}</th>
+                <th scope="col">{{#str}}connections_col_client, local_pluginiaconnect{{/str}}</th>
+                <th scope="col">{{#str}}connections_col_profile, local_pluginiaconnect{{/str}}</th>
+                <th scope="col">{{#str}}connections_col_level, local_pluginiaconnect{{/str}}</th>
+                <th scope="col">{{#str}}connections_col_created, local_pluginiaconnect{{/str}}</th>
+                <th scope="col">{{#str}}connections_col_lastused, local_pluginiaconnect{{/str}}</th>
+                <th scope="col">{{#str}}connections_col_actions, local_pluginiaconnect{{/str}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#rows}}
+            <tr>
+                <th scope="row"><a href="{{userurl}}">{{userfullname}}</a> <span class="small text-muted">#{{userid}}</span></th>
+                <td>
+                    {{clientname}}
+                    {{#hasactor}}<div class="small text-muted">{{actorlabel}}</div>{{/hasactor}}
+                    {{#clienthost}}<div class="small text-muted">{{clienthost}}</div>{{/clienthost}}
+                </td>
+                <td>{{profilename}}</td>
+                <td>{{levelname}}</td>
+                <td>{{created}}</td>
+                <td>{{lastused}}</td>
+                <td>
+                    <form method="post" action="{{actionurl}}" class="d-inline">
+                        <input type="hidden" name="sesskey" value="{{sesskey}}">
+                        <input type="hidden" name="action" value="revoke">
+                        <input type="hidden" name="target" value="{{id}}">
+                        <button type="submit" class="btn btn-secondary btn-sm">{{#str}}adminconnections_revoke_one, local_pluginiaconnect{{/str}}</button>
+                    </form>
+                    <form method="post" action="{{actionurl}}" class="d-inline">
+                        <input type="hidden" name="sesskey" value="{{sesskey}}">
+                        <input type="hidden" name="action" value="revokeuser">
+                        <input type="hidden" name="target" value="{{userid}}">
+                        <button type="submit" class="btn btn-secondary btn-sm">{{#str}}adminconnections_revoke_user, local_pluginiaconnect{{/str}}</button>
+                    </form>
+                    <form method="post" action="{{actionurl}}" class="d-inline">
+                        <input type="hidden" name="sesskey" value="{{sesskey}}">
+                        <input type="hidden" name="action" value="revokeclient">
+                        <input type="hidden" name="target" value="{{clientid}}">
+                        <button type="submit" class="btn btn-secondary btn-sm">{{#str}}adminconnections_revoke_client, local_pluginiaconnect{{/str}}</button>
+                    </form>
+                </td>
+            </tr>
+            {{/rows}}
+        </tbody>
+    </table>
+    {{/hasrows}}
+</div>

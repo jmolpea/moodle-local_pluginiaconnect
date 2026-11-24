@@ -1,0 +1,118 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_pluginiaconnect/register
+
+    State of the registration of the site with the gateway and the data a registration sends.
+
+    Context variables required for this template:
+    * intro - Introductory text.
+    * gateway - Address of the gateway.
+    * statetext - Current state in words.
+    * isregistered - Whether the site is registered.
+    * ispending - Whether the site was removed locally and the gateway could not be told.
+    * canregister - Whether the registration form follows.
+    * siteid - Identifier given by the gateway.
+    * registeredon - Date of the registration.
+    * hasblockers - Whether something prevents registering.
+    * blockers - List of texts.
+    * data - List: name, value. What a registration sends.
+    * actionurl - URL the remove form posts to.
+    * sesskey - Session key.
+
+    Example context (json):
+    {
+        "intro": "Registering lets assistants reach this site through one address.",
+        "gateway": "https://connect.pluginia.es",
+        "statetext": "This site is not registered.",
+        "isregistered": false,
+        "ispending": false,
+        "canregister": true,
+        "siteid": "",
+        "registeredon": "",
+        "hasblockers": false,
+        "blockers": [],
+        "data": [{"name": "Site address", "value": "https://example.com"}],
+        "actionurl": "https://example.com/local/pluginiaconnect/admin/register.php",
+        "sesskey": "abc"
+    }
+}}
+<div class="local-pluginiaconnect-register">
+    <p>{{intro}}</p>
+    <dl class="row">
+        <dt class="col-sm-3">{{#str}}register_gateway, local_pluginiaconnect{{/str}}</dt>
+        <dd class="col-sm-9">{{gateway}}</dd>
+        <dt class="col-sm-3">{{#str}}register_state, local_pluginiaconnect{{/str}}</dt>
+        <dd class="col-sm-9" data-region="pc-register-state">{{statetext}}</dd>
+        {{#siteid}}
+        <dt class="col-sm-3">{{#str}}register_siteid, local_pluginiaconnect{{/str}}</dt>
+        <dd class="col-sm-9">{{siteid}}</dd>
+        {{/siteid}}
+        {{#registeredon}}
+        <dt class="col-sm-3">{{#str}}register_registeredon, local_pluginiaconnect{{/str}}</dt>
+        <dd class="col-sm-9">{{registeredon}}</dd>
+        {{/registeredon}}
+    </dl>
+
+    {{#hasblockers}}
+    <div class="alert alert-warning" role="alert">
+        <p>{{#str}}register_blockers, local_pluginiaconnect{{/str}}</p>
+        <ul>
+            {{#blockers}}<li>{{.}}</li>{{/blockers}}
+        </ul>
+    </div>
+    {{/hasblockers}}
+
+    {{#isregistered}}
+    <form method="post" action="{{actionurl}}">
+        <input type="hidden" name="sesskey" value="{{sesskey}}">
+        <input type="hidden" name="unregister" value="1">
+        <p>{{#str}}unregister_explain, local_pluginiaconnect{{/str}}</p>
+        <button type="submit" class="btn btn-danger">{{#str}}unregister_submit, local_pluginiaconnect{{/str}}</button>
+    </form>
+    {{/isregistered}}
+    {{#ispending}}
+    <form method="post" action="{{actionurl}}">
+        <input type="hidden" name="sesskey" value="{{sesskey}}">
+        <input type="hidden" name="unregister" value="1">
+        <p>{{#str}}unregister_pending_explain, local_pluginiaconnect{{/str}}</p>
+        <button type="submit" class="btn btn-secondary">{{#str}}unregister_retry, local_pluginiaconnect{{/str}}</button>
+    </form>
+    {{/ispending}}
+
+    {{#canregister}}
+    <h3 class="h4">{{#str}}register_data, local_pluginiaconnect{{/str}}</h3>
+    <p>{{#str}}register_data_intro, local_pluginiaconnect{{/str}}</p>
+    <table class="table generaltable w-auto" data-region="pc-register-data">
+        <caption class="sr-only visually-hidden">{{#str}}register_data, local_pluginiaconnect{{/str}}</caption>
+        <thead>
+            <tr>
+                <th scope="col">{{#str}}register_data_col_name, local_pluginiaconnect{{/str}}</th>
+                <th scope="col">{{#str}}register_data_col_value, local_pluginiaconnect{{/str}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#data}}
+            <tr>
+                <th scope="row">{{name}}</th>
+                <td>{{value}}</td>
+            </tr>
+            {{/data}}
+        </tbody>
+    </table>
+    {{/canregister}}
+</div>

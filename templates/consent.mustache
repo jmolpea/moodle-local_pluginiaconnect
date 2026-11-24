@@ -1,0 +1,160 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_pluginiaconnect/consent
+
+    Consent page of the OAuth authorization endpoint. No JavaScript.
+
+    Context variables required for this template:
+    * clientname - Name declared by the application (untrusted text).
+    * clienthost - Host of the application identifier, may be empty.
+    * redirecthost - Host the user is sent back to.
+    * isloopback - Whether the user is sent back to this computer.
+    * isgateway - Whether the request comes through the Pluginia Connect gateway.
+    * signedin - Sentence naming the site and the signed-in user.
+    * requester - Who asks for access when the request comes through the gateway.
+    * actionurl - URL the form posts to.
+    * sesskey - Session key.
+    * profiles - List of value, id, label, description, checked, readtools, writetools.
+    * canwrite - Whether "read and changes" is offered.
+    * siteapproval - Whether changes will need approval on the site.
+    * datanotice - Notice about where the data goes.
+    * hassitenotice, sitenotice - Notice of the institution.
+    * privacyurl - Privacy policy of the institution, may be empty.
+    * connectionsurl - Page with the user's connections, may be empty.
+    * error - Error message, may be empty.
+
+    Example context (json):
+    {
+        "clientname": "Claude",
+        "clienthost": "claude.ai",
+        "redirecthost": "claude.ai",
+        "isloopback": false,
+        "isgateway": false,
+        "signedin": "You are signed in to Campus Demo as Ana Pérez.",
+        "requester": "",
+        "actionurl": "https://example.com/local/pluginiaconnect/oauth/authorize.php?client_id=x",
+        "sesskey": "abc123",
+        "profiles": [
+            {
+                "value": "teacher",
+                "id": "pc-profile-teacher",
+                "label": "Teacher",
+                "description": "Work with the courses you teach.",
+                "checked": true,
+                "hasreadtools": true,
+                "readtools": [{"title": "List my courses"}],
+                "haswritetools": true,
+                "writetools": [{"title": "Save assignment grade"}]
+            }
+        ],
+        "canwrite": true,
+        "siteapproval": false,
+        "datanotice": "What you ask for is sent to the provider of the assistant.",
+        "hassitenotice": false,
+        "sitenotice": "",
+        "privacyurl": "",
+        "connectionsurl": "",
+        "error": ""
+    }
+}}
+<div class="local-pluginiaconnect-consent">
+    <h2>{{#str}}consent_heading, local_pluginiaconnect{{/str}}</h2>
+
+    {{#error}}
+        <div class="alert alert-danger" role="alert">{{error}}</div>
+    {{/error}}
+
+    <p>{{signedin}}</p>
+
+    <dl class="row">
+        <dt class="col-sm-4">{{#str}}consent_requester, local_pluginiaconnect{{/str}}</dt>
+        <dd class="col-sm-8">
+            {{#isgateway}}
+                {{requester}}
+            {{/isgateway}}
+            {{^isgateway}}{{clientname}}{{/isgateway}}
+        </dd>
+        {{#clienthost}}
+            <dt class="col-sm-4">{{#str}}consent_clienthost, local_pluginiaconnect{{/str}}</dt>
+            <dd class="col-sm-8">{{clienthost}}</dd>
+        {{/clienthost}}
+        <dt class="col-sm-4">{{#str}}consent_redirecthost, local_pluginiaconnect{{/str}}</dt>
+        <dd class="col-sm-8">{{redirecthost}}</dd>
+    </dl>
+
+    {{#isloopback}}
+        <div class="alert alert-warning" role="alert">{{#str}}consent_loopback, local_pluginiaconnect{{/str}}</div>
+    {{/isloopback}}
+
+    <form method="post" action="{{actionurl}}">
+        <input type="hidden" name="sesskey" value="{{sesskey}}">
+
+        <fieldset class="mb-3">
+            <legend class="h5">{{#str}}consent_profile, local_pluginiaconnect{{/str}}</legend>
+            {{#profiles}}
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="radio" name="profile" id="{{id}}" value="{{value}}" {{#checked}}checked{{/checked}} required>
+                    <label class="form-check-label" for="{{id}}"><strong>{{label}}</strong> &ndash; {{description}}</label>
+                    {{#hasreadtools}}
+                        <div class="small">{{#str}}consent_cando, local_pluginiaconnect{{/str}}</div>
+                        <ul class="small">
+                            {{#readtools}}<li>{{title}}</li>{{/readtools}}
+                        </ul>
+                    {{/hasreadtools}}
+                    {{#haswritetools}}
+                        <div class="small">{{#str}}consent_candowrite, local_pluginiaconnect{{/str}}</div>
+                        <ul class="small">
+                            {{#writetools}}<li>{{title}}</li>{{/writetools}}
+                        </ul>
+                    {{/haswritetools}}
+                </div>
+            {{/profiles}}
+        </fieldset>
+
+        <fieldset class="mb-3">
+            <legend class="h5">{{#str}}consent_level, local_pluginiaconnect{{/str}}</legend>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="level" id="pc-level-read" value="read" checked>
+                <label class="form-check-label" for="pc-level-read">{{#str}}consent_level_read, local_pluginiaconnect{{/str}}</label>
+            </div>
+            {{#canwrite}}
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="level" id="pc-level-write" value="write">
+                    <label class="form-check-label" for="pc-level-write">{{#str}}consent_level_write, local_pluginiaconnect{{/str}}</label>
+                </div>
+                {{#siteapproval}}
+                    <p class="small">{{#str}}consent_siteapproval, local_pluginiaconnect{{/str}}</p>
+                {{/siteapproval}}
+            {{/canwrite}}
+        </fieldset>
+
+        <p>{{datanotice}}</p>
+        {{#hassitenotice}}
+            <p>{{sitenotice}}</p>
+        {{/hassitenotice}}
+        {{#privacyurl}}
+            <p><a href="{{privacyurl}}" target="_blank" rel="noopener noreferrer">{{#str}}consent_privacy, local_pluginiaconnect{{/str}}</a></p>
+        {{/privacyurl}}
+        {{#connectionsurl}}
+            <p><a href="{{connectionsurl}}" target="_blank" rel="noopener noreferrer">{{#str}}consent_connections, local_pluginiaconnect{{/str}}</a></p>
+        {{/connectionsurl}}
+
+        <button type="submit" name="decision" value="allow" class="btn btn-primary">{{#str}}consent_allow, local_pluginiaconnect{{/str}}</button>
+        <button type="submit" name="decision" value="cancel" class="btn btn-secondary" formnovalidate>{{#str}}cancel{{/str}}</button>
+    </form>
+</div>

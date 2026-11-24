@@ -1,0 +1,135 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_pluginiaconnect/audit
+
+    Audit report of the connector.
+
+    Context variables required for this template:
+    * intro - Introductory text.
+    * total - Text with the number of calls.
+    * hassummary - Whether there is any refusal to summarise.
+    * summary - List: outcome, reason, total.
+    * hasrows - Whether there is any row.
+    * rows - List: time, user, userid, client, tool, profile, kind, course, outcome, reason, items, duration, ip,
+      requestid, refused.
+    * downloadurl - URL of the CSV export.
+
+    Example context (json):
+    {
+        "intro": "Calls made by assistants through the connector.",
+        "total": "2 calls",
+        "hassummary": true,
+        "summary": [{"outcome": "denied", "reason": "permission_denied", "total": 1}],
+        "hasrows": true,
+        "rows": [
+            {
+                "time": "24/11/26, 10:05",
+                "user": "Ana Teacher",
+                "userid": 5,
+                "client": "Claude",
+                "tool": "list_my_courses",
+                "profile": "teacher",
+                "kind": "Read",
+                "course": "",
+                "outcome": "ok",
+                "reason": "",
+                "items": 3,
+                "duration": 42,
+                "ip": "203.0.113.5",
+                "requestid": "6f1c0a52-0000-4000-8000-000000000000",
+                "refused": false
+            }
+        ],
+        "downloadurl": "https://example.com/local/pluginiaconnect/admin/audit.php?download=1"
+    }
+}}
+<div class="local-pluginiaconnect-audit">
+    <p>{{intro}}</p>
+    <p>
+        <strong>{{total}}</strong>
+        <a class="btn btn-secondary btn-sm ml-2 ms-2" href="{{downloadurl}}">{{#str}}audit_download, local_pluginiaconnect{{/str}}</a>
+    </p>
+
+    {{#hassummary}}
+    <h3 class="h4">{{#str}}audit_summary, local_pluginiaconnect{{/str}}</h3>
+    <table class="table generaltable w-auto" data-region="pc-audit-summary">
+        <caption class="sr-only visually-hidden">{{#str}}audit_summary, local_pluginiaconnect{{/str}}</caption>
+        <thead>
+            <tr>
+                <th scope="col">{{#str}}audit_col_outcome, local_pluginiaconnect{{/str}}</th>
+                <th scope="col">{{#str}}audit_col_reason, local_pluginiaconnect{{/str}}</th>
+                <th scope="col">{{#str}}audit_col_total, local_pluginiaconnect{{/str}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#summary}}
+            <tr>
+                <td>{{outcome}}</td>
+                <td>{{reason}}</td>
+                <td>{{total}}</td>
+            </tr>
+            {{/summary}}
+        </tbody>
+    </table>
+    {{/hassummary}}
+
+    {{^hasrows}}
+    <p class="alert alert-info">{{#str}}audit_none, local_pluginiaconnect{{/str}}</p>
+    {{/hasrows}}
+    {{#hasrows}}
+    <div class="table-responsive">
+        <table class="table generaltable" data-region="pc-audit">
+            <caption class="sr-only visually-hidden">{{#str}}audit, local_pluginiaconnect{{/str}}</caption>
+            <thead>
+                <tr>
+                    <th scope="col">{{#str}}audit_col_time, local_pluginiaconnect{{/str}}</th>
+                    <th scope="col">{{#str}}audit_col_user, local_pluginiaconnect{{/str}}</th>
+                    <th scope="col">{{#str}}audit_col_client, local_pluginiaconnect{{/str}}</th>
+                    <th scope="col">{{#str}}audit_col_tool, local_pluginiaconnect{{/str}}</th>
+                    <th scope="col">{{#str}}audit_col_profile, local_pluginiaconnect{{/str}}</th>
+                    <th scope="col">{{#str}}audit_col_kind, local_pluginiaconnect{{/str}}</th>
+                    <th scope="col">{{#str}}audit_col_course, local_pluginiaconnect{{/str}}</th>
+                    <th scope="col">{{#str}}audit_col_outcome, local_pluginiaconnect{{/str}}</th>
+                    <th scope="col">{{#str}}audit_col_items, local_pluginiaconnect{{/str}}</th>
+                    <th scope="col">{{#str}}audit_col_duration, local_pluginiaconnect{{/str}}</th>
+                    <th scope="col">{{#str}}audit_col_ip, local_pluginiaconnect{{/str}}</th>
+                    <th scope="col">{{#str}}audit_col_requestid, local_pluginiaconnect{{/str}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#rows}}
+                <tr{{#refused}} class="table-warning"{{/refused}}>
+                    <td>{{time}}</td>
+                    <td>{{user}} <span class="small text-muted">#{{userid}}</span></td>
+                    <td>{{client}}</td>
+                    <td>{{tool}}</td>
+                    <td>{{profile}}</td>
+                    <td>{{kind}}</td>
+                    <td>{{course}}</td>
+                    <td>{{outcome}}{{#reason}} ({{reason}}){{/reason}}</td>
+                    <td>{{items}}</td>
+                    <td>{{duration}}</td>
+                    <td>{{ip}}</td>
+                    <td><span class="small">{{requestid}}</span></td>
+                </tr>
+                {{/rows}}
+            </tbody>
+        </table>
+    </div>
+    {{/hasrows}}
+</div>

@@ -1,0 +1,155 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_pluginiaconnect/connections
+
+    The user's own AI connections and the last calls made in their name.
+
+    Context variables required for this template:
+    * intro - Introductory text.
+    * hasconnections - Whether there is any connection.
+    * connections - List: id, clientname, clienthost, hasactor, actor, profilename, levelname, created, lastused, expires, actorlabel, revokelabel.
+    * actionurl - URL the revoke forms post to.
+    * sesskey - Session key.
+    * haspending - Whether any change waits for the user's approval.
+    * pending - List: tool, summary, expires, url.
+    * hascalls - Whether there is any call.
+    * calls - List: time, tool, course, outcome, reason.
+    * callstitle - Heading of the list of calls.
+
+    Example context (json):
+    {
+        "intro": "These assistants can act in your name on this site.",
+        "hasconnections": true,
+        "connections": [
+            {
+                "id": 3,
+                "clientname": "Claude",
+                "clienthost": "claude.ai",
+                "hasactor": false,
+                "actor": "",
+                "profilename": "Teacher",
+                "levelname": "Read only",
+                "created": "24/11/26, 10:00",
+                "lastused": "24/11/26, 10:05",
+                "expires": "23 May 2027",
+                "actorlabel": "",
+                "revokelabel": "Disconnect Claude"
+            }
+        ],
+        "actionurl": "https://example.com/local/pluginiaconnect/connections.php",
+        "sesskey": "abc",
+        "haspending": true,
+        "pending": [
+            {"tool": "set_activity_visibility", "summary": "Hide 'Unit 3 test' (Course: Statistics I).", "expires": "24/11/26, 10:15", "url": "https://example.com/local/pluginiaconnect/approve.php?id=4"}
+        ],
+        "hascalls": true,
+        "calls": [
+            {"time": "24/11/26, 10:05", "tool": "list_my_courses", "course": "", "outcome": "ok", "reason": ""}
+        ],
+        "callstitle": "Last 50 calls made in your name"
+    }
+}}
+<div class="local-pluginiaconnect-connections">
+    <p>{{intro}}</p>
+
+    <h3 class="h4">{{#str}}myconnections_active, local_pluginiaconnect{{/str}}</h3>
+    {{^hasconnections}}
+    <p class="alert alert-info">{{#str}}myconnections_none, local_pluginiaconnect{{/str}}</p>
+    {{/hasconnections}}
+    {{#hasconnections}}
+    <table class="table generaltable" data-region="pc-connections">
+        <caption class="sr-only visually-hidden">{{#str}}myconnections_active, local_pluginiaconnect{{/str}}</caption>
+        <thead>
+            <tr>
+                <th scope="col">{{#str}}connections_col_client, local_pluginiaconnect{{/str}}</th>
+                <th scope="col">{{#str}}connections_col_profile, local_pluginiaconnect{{/str}}</th>
+                <th scope="col">{{#str}}connections_col_level, local_pluginiaconnect{{/str}}</th>
+                <th scope="col">{{#str}}connections_col_created, local_pluginiaconnect{{/str}}</th>
+                <th scope="col">{{#str}}connections_col_lastused, local_pluginiaconnect{{/str}}</th>
+                <th scope="col">{{#str}}connections_col_expires, local_pluginiaconnect{{/str}}</th>
+                <th scope="col">{{#str}}connections_col_actions, local_pluginiaconnect{{/str}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#connections}}
+            <tr>
+                <th scope="row">
+                    {{clientname}}
+                    {{#hasactor}}<div class="small text-muted">{{actorlabel}}</div>{{/hasactor}}
+                    {{#clienthost}}<div class="small text-muted">{{clienthost}}</div>{{/clienthost}}
+                </th>
+                <td>{{profilename}}</td>
+                <td>{{levelname}}</td>
+                <td>{{created}}</td>
+                <td>{{lastused}}</td>
+                <td>{{expires}}</td>
+                <td>
+                    <form method="post" action="{{actionurl}}">
+                        <input type="hidden" name="sesskey" value="{{sesskey}}">
+                        <input type="hidden" name="revoke" value="{{id}}">
+                        <button type="submit" class="btn btn-secondary btn-sm" aria-label="{{revokelabel}}">
+                            {{#str}}myconnections_revoke, local_pluginiaconnect{{/str}}
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {{/connections}}
+        </tbody>
+    </table>
+    {{/hasconnections}}
+
+    {{#haspending}}
+    <h3 class="h4">{{#str}}myconnections_pending, local_pluginiaconnect{{/str}}</h3>
+    <ul class="list-unstyled" data-region="pc-pending">
+        {{#pending}}
+        <li class="alert alert-warning">
+            <div>{{summary}}</div>
+            <div class="small">{{tool}} &middot; {{#str}}myconnections_pending_expires, local_pluginiaconnect, {{expires}}{{/str}}</div>
+            <a class="btn btn-primary btn-sm mt-2" href="{{url}}">{{#str}}myconnections_pending_review, local_pluginiaconnect{{/str}}</a>
+        </li>
+        {{/pending}}
+    </ul>
+    {{/haspending}}
+    <h3 class="h4">{{callstitle}}</h3>
+    {{^hascalls}}
+    <p class="alert alert-info">{{#str}}myconnections_nocalls, local_pluginiaconnect{{/str}}</p>
+    {{/hascalls}}
+    {{#hascalls}}
+    <table class="table generaltable" data-region="pc-calls">
+        <caption class="sr-only visually-hidden">{{callstitle}}</caption>
+        <thead>
+            <tr>
+                <th scope="col">{{#str}}audit_col_time, local_pluginiaconnect{{/str}}</th>
+                <th scope="col">{{#str}}audit_col_tool, local_pluginiaconnect{{/str}}</th>
+                <th scope="col">{{#str}}audit_col_course, local_pluginiaconnect{{/str}}</th>
+                <th scope="col">{{#str}}audit_col_outcome, local_pluginiaconnect{{/str}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#calls}}
+            <tr>
+                <td>{{time}}</td>
+                <td>{{tool}}</td>
+                <td>{{course}}</td>
+                <td>{{outcome}}{{#reason}} ({{reason}}){{/reason}}</td>
+            </tr>
+            {{/calls}}
+        </tbody>
+    </table>
+    {{/hascalls}}
+</div>
