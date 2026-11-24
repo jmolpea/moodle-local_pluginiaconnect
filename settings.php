@@ -163,6 +163,17 @@ if ($hassiteconfig) {
         $checkbox('allowdcr');
         $checkbox('allowcimd');
         $list('cimdtrusteddomains', setting_list::KIND_HOSTS);
+        // Read on every request (challenge and metadata): no cache to refresh when it changes.
+        $page->add(new admin_setting_configselect(
+            $component . '/advertisedscopes',
+            $str('setting_advertisedscopes'),
+            $str('setting_advertisedscopes_desc'),
+            $defaults['advertisedscopes'],
+            [
+                'active' => $str('advertisedscopes_active'),
+                'baseline' => $str('advertisedscopes_baseline'),
+            ]
+        ));
         $bounded('accesstokenttl');
         $bounded('refreshidlettl');
         $bounded('grantabsolutettl');

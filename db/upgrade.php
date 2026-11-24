@@ -72,5 +72,14 @@ function xmldb_local_pluginiaconnect_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026112602, 'local', 'pluginiaconnect');
     }
 
+    if ($oldversion < 2026112603) {
+        // New setting "advertisedscopes": which scopes an assistant is told to ask for when it connects.
+        // Upgraded sites get the factory value, like new ones: every scope with an action switched on.
+        if (get_config('local_pluginiaconnect', 'advertisedscopes') === false) {
+            set_config('advertisedscopes', 'active', 'local_pluginiaconnect');
+        }
+        upgrade_plugin_savepoint(true, 2026112603, 'local', 'pluginiaconnect');
+    }
+
     return true;
 }

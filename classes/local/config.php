@@ -55,6 +55,7 @@ final class config {
         'allowdcr' => 1,
         'allowcimd' => 1,
         'cimdtrusteddomains' => "claude.ai\nchatgpt.com\nconnect.pluginia.es",
+        'advertisedscopes' => 'active',
         'accesstokenttl' => 3600,
         'refreshidlettl' => 2592000,
         'grantabsolutettl' => 15552000,

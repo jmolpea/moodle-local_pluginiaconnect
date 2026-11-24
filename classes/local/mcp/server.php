@@ -20,7 +20,6 @@ use local_pluginiaconnect\local\guardrail\rate_limiter;
 use local_pluginiaconnect\local\http\request;
 use local_pluginiaconnect\local\http\response;
 use local_pluginiaconnect\local\oauth\grant_context;
-use local_pluginiaconnect\local\policy\scope;
 use local_pluginiaconnect\local\policy\site_policy;
 use local_pluginiaconnect\local\urls;
 use local_pluginiaconnect\local\user_session;
@@ -361,14 +360,15 @@ final class server {
     }
 
     /**
-     * 401 with the OAuth challenge that points to the protected resource metadata.
+     * 401 with the OAuth challenge that points to the protected resource metadata. The scope parameter
+     * lists the scopes the site advertises (setting "advertisedscopes"): assistants ask for exactly these.
      *
      * @param bool $tokensent Whether a token was sent and rejected.
      * @return response
      */
     private static function unauthorized(bool $tokensent): response {
         $challenge = 'Bearer resource_metadata="' . urls::resource_metadata() . '", scope="'
-            . implode(' ', scope::BASELINE) . '"';
+            . implode(' ', site_policy::advertised_scopes()) . '"';
         if ($tokensent) {
             $challenge .= ', error="invalid_token"';
         }

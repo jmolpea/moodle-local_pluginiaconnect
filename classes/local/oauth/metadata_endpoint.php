@@ -49,9 +49,11 @@ final class metadata_endpoint {
             return response::oauth_error(405, 'invalid_request', 'Use GET.', ['Allow' => 'GET']);
         }
         $method = $documents[$path];
+        // Not kept by clients or proxies: the scopes listed follow the settings and the tool matrix, which
+        // apply on the next request.
         return response::json(200, server_metadata::$method(), [
             'Access-Control-Allow-Origin' => '*',
-            'Cache-Control' => 'public, max-age=300',
+            'Cache-Control' => 'no-cache',
         ]);
     }
 }

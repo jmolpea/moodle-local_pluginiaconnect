@@ -38,6 +38,8 @@ $string['adminconnections_revoke_one'] = 'Disconnect';
 $string['adminconnections_revoke_user'] = 'All of this user';
 $string['adminconnections_revoked'] = 'Connections disconnected: {$a}.';
 $string['adminconnections_total'] = 'Active connections: {$a}';
+$string['advertisedscopes_active'] = 'Everything switched on in this site (recommended)';
+$string['advertisedscopes_baseline'] = 'Basic reading only: profile, courses and grades';
 $string['approval_approval'] = 'Approval on this site';
 $string['approval_approve'] = 'Approve';
 $string['approval_changed'] = 'The situation on the site changed since you opened this page. Review the change again before approving it.';
@@ -439,6 +441,11 @@ $string['setting_actorpolicy_copilotcowork'] = 'Microsoft 365 Copilot Cowork';
 $string['setting_actorpolicy_copilotcowork_desc'] = 'What connections from Copilot Cowork may do. This assistant can run scheduled tasks with nobody watching, so a change is never applied directly: it waits until the user approves it on a page of this site. You can limit it to reading, or refuse it.';
 $string['setting_adminprofileusers'] = 'Administrators allowed to use the administrator profile';
 $string['setting_adminprofileusers_desc'] = 'User IDs, one per line. Leave empty to allow every site administrator, if the administrator profile is allowed.';
+$string['setting_advertisedscopes'] = 'Permissions an assistant asks for when it connects';
+$string['setting_advertisedscopes_desc'] = 'What an assistant such as Claude asks for when a user connects it to this site. Most assistants ask once and never ask for more later.
+<ul><li><strong>Everything switched on in this site</strong>: it asks for every kind of access that has at least one action switched on, on the "Actions by profile" page, for a profile allowed on this site. While read-only mode is on, it never asks for changes. This is what lets teachers, managers and administrators use their own actions and make changes from the assistant.</li>
+<li><strong>Basic reading only</strong>: it asks only to read the user\'s profile, courses and grades. Actions of teachers, managers and administrators, and every change, stay out of reach of assistants that do not ask for more.</li></ul>
+Either way the consent page gives each connection only what the profile and the access level chosen by the user allow. A change applies to new connections: to use it, the user disconnects the assistant and connects it again.';
 $string['setting_allowadminprofile'] = 'Allow the administrator profile';
 $string['setting_allowadminprofile_desc'] = 'Lets site administrators connect with a profile that can read the site status, the scheduled tasks and the list of installed plugins.';
 $string['setting_allowcimd'] = 'Accept assistants identified by a metadata document';

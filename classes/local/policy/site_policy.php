@@ -34,6 +34,12 @@ final class site_policy {
     /** @var string Assistant identifier of Microsoft 365 Copilot Cowork. */
     public const ACTOR_COWORK = 'copilot-cowork';
 
+    /** @var string Value of "advertisedscopes": every scope with an active tool. */
+    public const ADVERTISE_ACTIVE = 'active';
+
+    /** @var string Value of "advertisedscopes": the baseline read scopes only. */
+    public const ADVERTISE_BASELINE = 'baseline';
+
     /**
      * Master switch of the connector.
      *
@@ -131,6 +137,33 @@ final class site_policy {
             $scopes[$class::requirement()->scope] = true;
         }
         return array_keys($scopes);
+    }
+
+    /**
+     * Scopes the site advertises to assistants: in the 401 challenge of the MCP endpoint and in
+     * `scopes_supported` of the protected resource metadata. Assistants ask for exactly these when they
+     * connect, and the consent page then cuts them down by profile and access level.
+     *
+     * With the setting on "active" (factory value): the baseline plus every scope that has at least one
+     * tool switched on for at least one profile allowed on the site. A write scope is never included while
+     * the site is read-only. With "baseline", or the connector off, or an unknown value: the baseline only,
+     * and the assistant asks for more on demand (insufficient_scope).
+     *
+     * Read from the settings on every call: a change of the settings or of the tool matrix applies to the
+     * next request. Catalogue order, no duplicates, known scopes only.
+     *
+     * @return string[]
+     */
+    public static function advertised_scopes(): array {
+        $wanted = scope::BASELINE;
+        if (config::string('advertisedscopes') === self::ADVERTISE_ACTIVE && self::is_enabled()) {
+            foreach (profile::all() as $profile) {
+                if (config::bool(profile::setting($profile))) {
+                    $wanted = array_merge($wanted, self::scopes_with_active_tools($profile));
+                }
+            }
+        }
+        return array_values(array_filter(scope::all(), static fn(string $name): bool => in_array($name, $wanted, true)));
     }
 
     /**

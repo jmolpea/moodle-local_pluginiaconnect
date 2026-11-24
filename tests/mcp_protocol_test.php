@@ -104,7 +104,11 @@ final class mcp_protocol_test extends \advanced_testcase {
         $this->assertSame(401, $response->status);
         $challenge = $response->headers['WWW-Authenticate'];
         $this->assertStringContainsString('resource_metadata="' . local\urls::resource_metadata() . '"', $challenge);
-        $this->assertStringContainsString('scope="profile courses.read grades.read offline_access"', $challenge);
+        // Every profile is allowed and every read action is on: the scopes of all of them (advertised_scopes_test).
+        $this->assertStringContainsString(
+            'scope="profile courses.read grades.read participants.read manage.read users.read site.read offline_access"',
+            $challenge
+        );
         $this->assertStringNotContainsString('invalid_token', $challenge);
         $this->assertSame('no-store', $response->headers['Cache-Control']);
     }

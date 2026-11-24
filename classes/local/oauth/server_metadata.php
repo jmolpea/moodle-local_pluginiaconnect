@@ -18,6 +18,7 @@ namespace local_pluginiaconnect\local\oauth;
 
 use local_pluginiaconnect\local\config;
 use local_pluginiaconnect\local\policy\scope;
+use local_pluginiaconnect\local\policy\site_policy;
 use local_pluginiaconnect\local\urls;
 
 /**
@@ -55,14 +56,29 @@ final class server_metadata {
         }
         $document += [
             'authorization_response_iss_parameter_supported' => true,
-            'scopes_supported' => scope::all(),
+            'scopes_supported' => self::authorization_server_scopes(),
             'service_documentation' => urls::DOCUMENTATION,
         ];
         return $document;
     }
 
     /**
-     * Protected resource metadata (RFC 9728). Lists only the minimal read scopes.
+     * Scopes listed by the authorization server metadata.
+     *
+     * With the setting "advertisedscopes" on "active", the same list as the challenge and the protected
+     * resource metadata: a client that reads either document asks for the same scopes. With "baseline",
+     * every scope of the catalogue, as before: the assistant asks for more on demand and each scope it
+     * may be asked for is listed. The authorization endpoint accepts any known scope in both cases.
+     *
+     * @return string[]
+     */
+    private static function authorization_server_scopes(): array {
+        return config::string('advertisedscopes') === site_policy::ADVERTISE_ACTIVE
+            ? site_policy::advertised_scopes() : scope::all();
+    }
+
+    /**
+     * Protected resource metadata (RFC 9728). Lists the scopes the site advertises (setting "advertisedscopes").
      *
      * @return array
      */
@@ -70,7 +86,7 @@ final class server_metadata {
         return [
             'resource' => urls::resource(),
             'authorization_servers' => [urls::issuer()],
-            'scopes_supported' => scope::BASELINE,
+            'scopes_supported' => site_policy::advertised_scopes(),
             'bearer_methods_supported' => ['header'],
             'resource_documentation' => urls::DOCUMENTATION,
         ];

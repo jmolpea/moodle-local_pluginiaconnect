@@ -100,3 +100,11 @@ Feature: Administration of the connector
     And the "target" attribute of "Open the configuration manual of Pluginia Connect (opens in a new tab)" "link" should contain "_blank"
     And the "rel" attribute of "Open the configuration manual of Pluginia Connect (opens in a new tab)" "link" should contain "noopener"
     And "Open the configuration manual of Pluginia Connect (opens in a new tab)" "link" should appear before "Enable the connector" "text"
+
+  Scenario: The administrator chooses which permissions an assistant asks for when it connects
+    Given I log in as "admin"
+    When I navigate to "Plugins > Local plugins > Pluginia Connect > Settings" in site administration
+    Then the field "Permissions an assistant asks for when it connects" matches value "Everything switched on in this site (recommended)"
+    And I set the field "Permissions an assistant asks for when it connects" to "Basic reading only: profile, courses and grades"
+    And I press "Save changes"
+    And the field "Permissions an assistant asks for when it connects" matches value "Basic reading only: profile, courses and grades"

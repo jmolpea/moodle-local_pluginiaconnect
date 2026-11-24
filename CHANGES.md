@@ -4,6 +4,14 @@
 
 Alpha. Not for production sites.
 
+- New setting "Permissions an assistant asks for when it connects" (Sign-in and tokens). By default the
+  site now advertises, in the 401 challenge and in `scopes_supported` of its metadata, every scope with at
+  least one action switched on for an allowed profile (no scope that changes data in read-only mode), not
+  only the four basic read scopes. Claude asks for exactly the scopes of the challenge and never for more,
+  so until now the consent page only offered "Read only" and the actions of teachers, managers and
+  administrators were out of reach. The consent page still cuts each connection down to the chosen profile
+  and access level. "Basic reading only" keeps the previous behaviour. The metadata documents are no longer
+  cached for five minutes. Users connected before the change disconnect and connect the assistant again.
 - The nine actions that change something: save assignment grade, post course announcement, send message to
   participants, set activity visibility, update assignment dates, enrol users in course, set enrolment
   status, create course and set user suspension. All of them are switched off after installing or upgrading:
