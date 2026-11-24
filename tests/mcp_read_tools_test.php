@@ -670,9 +670,13 @@ final class mcp_read_tools_test extends \advanced_testcase {
         $this->assertCount(50, $standard['plugins']);
 
         foreach ([$status, $tasks, $plugins] as $result) {
-            // The site address is public and may contain the database name (both "moodle" on CI): leave it out.
+            // The site address is public: leave it out.
             $json = str_replace(trim(json_encode($CFG->wwwroot), '"'), '', json_encode($result->envelope));
-            $secrets = [$CFG->dataroot, $CFG->dirroot, 'SMTP-SECRET-VALUE', $CFG->release, (string) $CFG->version, $CFG->dbname];
+            $secrets = [$CFG->dataroot, $CFG->dirroot, 'SMTP-SECRET-VALUE', $CFG->release, (string) $CFG->version];
+            // The database name says nothing when it is "moodle" (as on CI): site addresses, plugin and task names carry it.
+            if (strtolower($CFG->dbname) !== 'moodle') {
+                $secrets[] = $CFG->dbname;
+            }
             foreach ($secrets as $secret) {
                 $this->assertStringNotContainsString(json_encode($secret), '"' . $json . '"');
                 $this->assertStringNotContainsString(trim(json_encode((string) $secret), '"'), $json);
