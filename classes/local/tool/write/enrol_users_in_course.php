@@ -80,7 +80,7 @@ final class enrol_users_in_course extends write_tool {
                 'url' => ['type' => 'string', 'format' => 'uri'],
             ]),
             false,
-            false,
+            true,
             true
         );
     }

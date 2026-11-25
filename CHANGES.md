@@ -22,6 +22,8 @@ Alpha. Not for production sites. Amendment 2 of the specification, block C and t
   plugin (`cli/export_catalog.php --component=...`). Refused entries are listed on the Diagnostics page.
   First plugin: Pluginia Analytics 1.2.0.
 - New limits "Forum posts per day" (20) and "Days per log query" (31).
+- "Create course" and "Enrol users in course" now carry `destructiveHint: true`, like every other action that
+  changes data, as the assistant directories ask. Nothing else changes: no action deletes anything.
 - Tests: static analysis of the code of every tool and extension for forbidden calls, the prohibitions on
   the base catalogue and on every loaded extension, factory defaults, and the extension loader.
 

@@ -9023,7 +9023,7 @@
             "annotations": {
                 "title": "Enrol users in course",
                 "readOnlyHint": false,
-                "destructiveHint": false,
+                "destructiveHint": true,
                 "idempotentHint": true,
                 "openWorldHint": false
             },
@@ -9462,7 +9462,7 @@
             "annotations": {
                 "title": "Create course",
                 "readOnlyHint": false,
-                "destructiveHint": false,
+                "destructiveHint": true,
                 "idempotentHint": false,
                 "openWorldHint": false
             },

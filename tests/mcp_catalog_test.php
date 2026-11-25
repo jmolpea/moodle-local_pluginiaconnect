@@ -99,9 +99,8 @@ final class mcp_catalog_test extends \advanced_testcase {
             }
             $this->assertFalse($annotations['openWorldHint']);
             $this->assertSame(!$requirement->write, $annotations['readOnlyHint']);
-            if ($annotations['readOnlyHint']) {
-                $this->assertFalse($annotations['destructiveHint']);
-            }
+            // Directory rule: read tools say readOnlyHint, every tool that changes data says destructiveHint.
+            $this->assertSame($requirement->write, $annotations['destructiveHint'], "{$name}.destructiveHint");
 
             // Security schemes in both places, with the real scope.
             $expected = [['type' => 'oauth2', 'scopes' => [$requirement->scope]]];

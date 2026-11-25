@@ -74,7 +74,7 @@ final class create_course extends write_tool {
                 'url' => ['type' => 'string', 'format' => 'uri'],
             ]),
             false,
-            false,
+            true,
             false
         );
     }
