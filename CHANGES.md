@@ -1,5 +1,30 @@
 # Changes
 
+## 0.3.0-dev (unreleased, first part)
+
+Alpha. Not for production sites. Amendment 2 of the specification, block C and the extension point.
+
+- Fifteen new actions, all switched off on new and upgraded sites until the administrator enables them in
+  "Actions by profile", reads included: course activity log (31 days at most, never addresses or anonymous
+  events), activity participation, completion per activity, quiz attempts (no questions or answers), course
+  progress summary (figures only), overdue submissions (with overrides and extensions), forums (list, read
+  discussions, participation summary), site activity (sign-ins, course views and active users, counts only),
+  failed tasks (redacted output excerpt, withheld when it looks like a secret) and site checks; and two
+  changes: start a forum discussion and reply to a forum post, always as the connected user, confirmed in two
+  steps, at most "Forum posts per day" per connection. Separate groups apply to every report.
+- The 22 read actions of version 1.0 keep their default (on); every action added later starts off.
+- Five new scopes (reports, forums, extensions) granted by area: the consent page shows "Additional areas"
+  with one box each, empty unless the user already granted it to that application.
+- Extension point for whitelisted Pluginia plugins (`db/pluginiaconnect.php`, classes in
+  `classes/pluginiaconnect/`): fixed whitelist with a reserved name infix per plugin, minimum version,
+  validation of every entry against the permanent prohibitions (no deletion, no acting as another user, no
+  secrets, prompts, licences, models or costs, closed values only for writes), and a catalogue file per
+  plugin (`cli/export_catalog.php --component=...`). Refused entries are listed on the Diagnostics page.
+  First plugin: Pluginia Analytics 1.2.0.
+- New limits "Forum posts per day" (20) and "Days per log query" (31).
+- Tests: static analysis of the code of every tool and extension for forbidden calls, the prohibitions on
+  the base catalogue and on every loaded extension, factory defaults, and the extension loader.
+
 ## 0.2.0 (unreleased)
 
 Alpha. Not for production sites.

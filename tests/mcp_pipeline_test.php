@@ -543,7 +543,7 @@ final class mcp_pipeline_test extends \advanced_testcase {
     public function test_test_tools_cannot_leak_into_the_catalogue(): void {
         $names = array_column(tool_registry::catalog()['tools'], 'name');
         $this->assertNotContains('teacher_probe', $names);
-        $this->assertCount(31, $names);
+        $this->assertCount(46, $names);
     }
 
     public function test_user_session_fallback_revocation_and_login_exceptions(): void {

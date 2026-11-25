@@ -16,13 +16,15 @@
 
 namespace local_pluginiaconnect\local\mcp;
 
+use local_pluginiaconnect\extension\loader;
 use local_pluginiaconnect\local\tool\read;
 use local_pluginiaconnect\local\tool\write;
 
 /**
- * The closed catalogue of tools: a static map from tool name to class.
+ * The closed catalogue of tools: a static map from tool name to class, plus the tools that the
+ * whitelisted Pluginia plugins declare and the extension loader accepts (amendment 2, D19).
  *
- * Nothing outside this map can be called. A published name never changes its
+ * Nothing outside them can be called. A published name never changes its
  * meaning; a tool that changes incompatibly gets a new name.
  *
  * @package    local_pluginiaconnect
@@ -57,6 +59,20 @@ final class tool_registry {
         'list_scheduled_tasks' => read\list_scheduled_tasks::class,
         'list_installed_plugins' => read\list_installed_plugins::class,
         'get_pending_action_status' => read\get_pending_action_status::class,
+        // Version 0.3.0, amendment 2, block C: reports, forums and site diagnostics. Off by default (D23).
+        'get_course_activity_log' => read\get_course_activity_log::class,
+        'get_activity_participation_report' => read\get_activity_participation_report::class,
+        'get_activity_completion_report' => read\get_activity_completion_report::class,
+        'get_quiz_attempts_report' => read\get_quiz_attempts_report::class,
+        'get_course_progress_summary' => read\get_course_progress_summary::class,
+        'list_overdue_submissions' => read\list_overdue_submissions::class,
+        'list_course_forums' => read\list_course_forums::class,
+        'list_forum_discussions' => read\list_forum_discussions::class,
+        'get_forum_discussion' => read\get_forum_discussion::class,
+        'get_forum_participation_summary' => read\get_forum_participation_summary::class,
+        'get_site_activity_summary' => read\get_site_activity_summary::class,
+        'list_failed_tasks' => read\list_failed_tasks::class,
+        'get_site_checks' => read\get_site_checks::class,
         'save_assignment_grade' => write\save_assignment_grade::class,
         'post_course_announcement' => write\post_course_announcement::class,
         'send_message_to_participants' => write\send_message_to_participants::class,
@@ -66,6 +82,8 @@ final class tool_registry {
         'set_enrolment_status' => write\set_enrolment_status::class,
         'create_course' => write\create_course::class,
         'set_user_suspension' => write\set_user_suspension::class,
+        'post_forum_discussion' => write\post_forum_discussion::class,
+        'reply_to_forum_post' => write\reply_to_forum_post::class,
     ];
 
     /** @var array Extra tools registered by unit tests. Always empty outside PHPUnit. */
@@ -91,16 +109,35 @@ final class tool_registry {
      * @return string|null
      */
     public static function get(string $name): ?string {
-        return self::TOOLS[$name] ?? (self::$testtools[$name] ?? null);
+        return self::TOOLS[$name] ?? (loader::tools()[$name] ?? (self::$testtools[$name] ?? null));
     }
 
     /**
-     * The whole catalogue.
+     * The whole catalogue: base tools, then accepted extension tools by component.
      *
      * @return string[] Tool name => class.
      */
     public static function all(): array {
-        return self::TOOLS + self::$testtools;
+        return self::TOOLS + loader::tools() + self::$testtools;
+    }
+
+    /**
+     * The base catalogue only, the one written to catalog/tools.json.
+     *
+     * @return string[] Tool name => class.
+     */
+    public static function base(): array {
+        return self::TOOLS;
+    }
+
+    /**
+     * Whether a name belongs to the base catalogue.
+     *
+     * @param string $name Tool name.
+     * @return bool
+     */
+    public static function is_base(string $name): bool {
+        return isset(self::TOOLS[$name]);
     }
 
     /**
@@ -121,17 +158,27 @@ final class tool_registry {
     public static function catalog(): array {
         $tools = [];
         foreach (self::TOOLS as $class) {
-            $requirement = $class::requirement();
-            $tools[] = self::describe($class) + [
-                'x-pluginia' => [
-                    'profile' => $requirement->profile,
-                    'scope' => $requirement->scope,
-                    'write' => $requirement->write,
-                    'approval' => $requirement->approval,
-                ],
-            ];
+            $tools[] = self::catalog_entry($class);
         }
         return ['format' => self::CATALOG_FORMAT, 'tools' => $tools];
+    }
+
+    /**
+     * One tool as written to a catalogue file: its MCP definition and the internal fields the gateway reads.
+     *
+     * @param string $class Tool class.
+     * @return array
+     */
+    public static function catalog_entry(string $class): array {
+        $requirement = $class::requirement();
+        return self::describe($class) + [
+            'x-pluginia' => [
+                'profile' => $requirement->profile,
+                'scope' => $requirement->scope,
+                'write' => $requirement->write,
+                'approval' => $requirement->approval,
+            ],
+        ];
     }
 
     /**

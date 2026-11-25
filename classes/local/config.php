@@ -69,6 +69,8 @@ final class config {
         'maxresponsechars' => 48000,
         'maxbulkusers' => 50,
         'maxrecipients' => 50,
+        'maxforumpostsday' => 20,
+        'logwindowdays' => 31,
         'auditretentiondays' => 180,
         'logip' => 1,
         'unattendedactors' => 'copilot-cowork',
@@ -89,6 +91,8 @@ final class config {
         'maxresponsechars' => [2000, 60000],
         'maxbulkusers' => [1, 50],
         'maxrecipients' => [1, 50],
+        'maxforumpostsday' => [1, 20],
+        'logwindowdays' => [1, 31],
         'auditretentiondays' => [30, 730],
     ];
 

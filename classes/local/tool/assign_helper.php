@@ -234,4 +234,83 @@ final class assign_helper {
     public static function student_fields(string $profile): array {
         return array_merge(people::fields($profile), ['anonymous']);
     }
+
+    /**
+     * Work past its due date and not submitted, per learner, in the assignments of a course the caller grades.
+     *
+     * The due date of each learner is the one that applies to them: course relative dates, user and group
+     * overrides, and an extension when they have one. Only assignments that take submissions, that the caller
+     * sees and grades, are looked at. Team assignments and assignments with blind marking are left out and
+     * counted, because a list per learner would either be wrong or reveal who is who.
+     *
+     * @param \stdClass $course Course record.
+     * @param \stdClass $caller User the call runs as.
+     * @param int|null $only Course module id of the one assignment to look at, or null for all of them.
+     * @return array ['users' => [userid => \stdClass user], 'items' => [userid => list of overdue items],
+     *               'checked' => int, 'skipped' => int]. Each item: cmid, name, due, cutoff, extension.
+     */
+    public static function overdue(\stdClass $course, \stdClass $caller, ?int $only = null): array {
+        global $DB;
+        $now = time();
+        $result = ['users' => [], 'items' => [], 'checked' => 0, 'skipped' => 0];
+        foreach (get_fast_modinfo($course)->get_instances_of('assign') as $cm) {
+            if ($only !== null && (int) $cm->id !== $only) {
+                continue;
+            }
+            $context = \context_module::instance($cm->id);
+            if (!$cm->uservisible || !has_capability('mod/assign:grade', $context, $caller)) {
+                continue;
+            }
+            $assign = self::load($cm, $course);
+            $instance = $assign->get_instance($caller->id);
+            if (!$assign->is_any_submission_plugin_enabled()) {
+                continue;
+            }
+            if ($instance->teamsubmission || self::identities_hidden($assign, $caller)) {
+                $result['skipped']++;
+                continue;
+            }
+            $result['checked']++;
+            $users = array_filter(self::gradable_users($assign, $course, $caller), static fn($user) =>
+                (int) $user->id !== (int) $caller->id);
+            if (!$users) {
+                continue;
+            }
+            $submitted = $DB->get_records_menu('assign_submission', [
+                'assignment' => $instance->id, 'latest' => 1, 'groupid' => 0, 'status' => ASSIGN_SUBMISSION_STATUS_SUBMITTED,
+            ], '', 'userid, id');
+            $extensions = $DB->get_records_select_menu(
+                'assign_user_flags',
+                'assignment = :a AND extensionduedate > 0',
+                ['a' => $instance->id],
+                '',
+                'userid, extensionduedate'
+            );
+            foreach ($users as $userid => $user) {
+                if (isset($submitted[$userid])) {
+                    continue;
+                }
+                // The dates that apply to this learner: relative dates and overrides.
+                $assign->update_effective_access($userid);
+                $own = $assign->get_instance($userid);
+                $due = (int) $own->duedate;
+                if ($due <= 0) {
+                    continue;
+                }
+                $extension = (int) ($extensions[$userid] ?? 0);
+                if ($now <= max($due, $extension)) {
+                    continue;
+                }
+                $result['users'][$userid] = $user;
+                $result['items'][$userid][] = [
+                    'cmid' => (int) $cm->id,
+                    'name' => (string) $cm->get_formatted_name(),
+                    'due' => $due,
+                    'cutoff' => (int) $own->cutoffdate,
+                    'extension' => $extension,
+                ];
+            }
+        }
+        return $result;
+    }
 }

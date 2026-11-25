@@ -44,7 +44,23 @@ final class scope {
         'users.read' => [profile::MANAGER, false],
         'users.write' => [profile::ADMIN, true],
         'site.read' => [profile::ADMIN, false],
+        'reports.read' => [profile::TEACHER, false],
+        'forums.read' => [profile::TEACHER, false],
+        'forums.write' => [profile::TEACHER, true],
+        'extensions.read' => [profile::TEACHER, false],
+        'extensions.write' => [profile::TEACHER, true],
         self::OFFLINE => [profile::STUDENT, false],
+    ];
+
+    /**
+     * @var array Areas the user ticks one by one on the consent page (amendment 2, D21 and D22): area => scopes.
+     *      A scope of an area is only granted when its box is ticked, so a consent given before the area existed
+     *      is never widened by switching its tools on.
+     */
+    public const AREAS = [
+        'reports' => ['reports.read'],
+        'forums' => ['forums.read', 'forums.write'],
+        'extensions' => ['extensions.read', 'extensions.write'],
     ];
 
     /** @var string[] Minimal read set advertised by the protected resource metadata and the 401 challenge. */
@@ -87,6 +103,35 @@ final class scope {
      */
     public static function minimum_profile(string $scope): ?string {
         return self::DEFINITIONS[$scope][0] ?? null;
+    }
+
+    /**
+     * Area a scope belongs to, or null for the scopes granted with the access level alone.
+     *
+     * @param string $scope Scope name.
+     * @return string|null
+     */
+    public static function area_of(string $scope): ?string {
+        foreach (self::AREAS as $area => $scopes) {
+            if (in_array($scope, $scopes, true)) {
+                return $area;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Drops the scopes of the areas the user did not tick.
+     *
+     * @param string[] $scopes Scopes otherwise granted.
+     * @param string[] $areas Areas ticked on the consent page.
+     * @return string[]
+     */
+    public static function within_areas(array $scopes, array $areas): array {
+        return array_values(array_filter($scopes, static function (string $name) use ($areas): bool {
+            $area = self::area_of($name);
+            return $area === null || in_array($area, $areas, true);
+        }));
     }
 
     /**

@@ -184,7 +184,7 @@ if ($hassiteconfig) {
         foreach (
             [
                 'ratereadminute', 'ratereadday', 'ratewriteminute', 'ratewriteday', 'exposurebudgethour',
-                'maxpagesize', 'maxresponsechars', 'maxbulkusers', 'maxrecipients',
+                'maxpagesize', 'maxresponsechars', 'maxbulkusers', 'maxrecipients', 'maxforumpostsday', 'logwindowdays',
             ] as $name
         ) {
             $bounded($name);

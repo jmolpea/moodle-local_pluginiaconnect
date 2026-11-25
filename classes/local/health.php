@@ -68,7 +68,43 @@ final class health {
         $results[] = self::check_clock(time());
         $results[] = self::check_proxy(!empty($CFG->proxyhost), config::bool('allowcimd'));
         $results[] = self::check_gateway(site_identity::state(), self::probe_gateway());
+        $results[] = self::check_extensions(\local_pluginiaconnect\extension\loader::report());
         return $results;
+    }
+
+    /**
+     * Tools declared by the whitelisted Pluginia plugins installed on the site (amendment 2, 11.2): which were
+     * loaded, and every one that was refused with its reason.
+     *
+     * @param array $report Result of the extension loader, component => entry.
+     * @return array
+     */
+    public static function check_extensions(array $report): array {
+        $loaded = [];
+        $refused = [];
+        foreach ($report as $component => $entry) {
+            if ($entry['status'] === 'loaded') {
+                $loaded[] = $component . ' (' . count($entry['tools']) . ')';
+            } else if (in_array($entry['status'], ['version_too_old', 'invalid_declaration'], true)) {
+                $refused[] = $component . ': ' . $entry['status'];
+            }
+            foreach ($entry['rejected'] as $name => $reason) {
+                $refused[] = "{$component}/{$name}: {$reason}";
+            }
+        }
+        if ($refused) {
+            return self::result(
+                'extensions',
+                self::WARNING,
+                'health_extensions_refused',
+                'health_extensions_remedy',
+                implode('; ', $refused)
+            );
+        }
+        if (!$loaded) {
+            return self::result('extensions', self::INFO, 'health_extensions_none');
+        }
+        return self::result('extensions', self::OK, 'health_extensions_ok', null, implode(', ', $loaded));
     }
 
     /**

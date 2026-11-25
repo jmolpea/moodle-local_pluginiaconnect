@@ -104,7 +104,7 @@ default).
 ## Status of this alpha
 
 This alpha contains sign-in and consent, tokens, the MCP endpoint, the permission engine, the
-audit record, the 31 actions of the catalogue (22 that read and 9 that change something, listed in
+audit record, the 46 actions of the catalogue (35 that read and 11 that change something, listed in
 [CHANGES.md](CHANGES.md)), two-step confirmation and approval of changes on the site, the
 "My AI connections" page, the administrator pages (connections, audit report, actions by profile,
 diagnostics) and registration with the Pluginia Connect gateway. Nothing of the catalogue is

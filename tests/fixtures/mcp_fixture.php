@@ -46,6 +46,13 @@ class local_pluginiaconnect_mcp_fixture {
             'enabled' => 1, 'directmode' => 1, 'allowstudentprofile' => 1, 'allowteacherprofile' => 1,
             'allowmanagerprofile' => 1, 'allowadminprofile' => 1,
         ];
+        // The read probes of the pipeline tests are switched on, as the 22 read tools of version 1.0 are by default;
+        // every other tool added after 1.0 starts off (amendment 2, D23).
+        foreach (['teacher_probe', 'boom_probe', 'denied_probe'] as $probe) {
+            foreach (['student', 'teacher', 'manager', 'admin'] as $profile) {
+                $settings += ["tool_{$probe}_{$profile}" => 1];
+            }
+        }
         foreach ($settings as $name => $value) {
             set_config($name, $value, 'local_pluginiaconnect');
         }

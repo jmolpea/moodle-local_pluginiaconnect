@@ -756,7 +756,7 @@ final class security_review2_test extends \advanced_testcase {
                 );
             }
         }
-        $this->assertSame(9, $writes);
+        $this->assertSame(11, $writes);
     }
 
     /**
