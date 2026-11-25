@@ -60,7 +60,21 @@ final class site_policy {
     }
 
     /**
-     * Cell of the tool × profile matrix. Never saved means on for read tools and off for write tools.
+     * @var string[] The 22 read tools of version 1.0 of the catalogue. They are the only tools on by default:
+     *      every tool added later, read or write, base or extension, starts off until the administrator switches
+     *      it on (amendment 2, D23). The list is fixed: it never grows.
+     */
+    public const ORIGINAL_READS = [
+        'get_connection_info', 'list_my_courses', 'search_courses', 'get_course_outline', 'list_upcoming_deadlines',
+        'get_assignment_details', 'list_course_announcements', 'get_my_grades', 'get_my_course_progress',
+        'list_course_participants', 'list_submissions_to_grade', 'get_submission', 'get_course_grade_summary',
+        'get_course_completion_report', 'list_inactive_participants', 'list_categories', 'get_course_enrolment_summary',
+        'find_users', 'get_site_status', 'list_scheduled_tasks', 'list_installed_plugins', 'get_pending_action_status',
+    ];
+
+    /**
+     * Cell of the tool × profile matrix. Never saved means on for the 22 read tools of version 1.0 and off
+     * for every other tool.
      *
      * @param string $tool Tool name.
      * @param string $profile Profile of the token.
@@ -73,7 +87,7 @@ final class site_policy {
         }
         $value = get_config(config::COMPONENT, "tool_{$tool}_{$profile}");
         if ($value === false || $value === null || $value === '') {
-            return !$class::requirement()->write;
+            return !$class::requirement()->write && in_array($tool, self::ORIGINAL_READS, true);
         }
         return !empty($value);
     }

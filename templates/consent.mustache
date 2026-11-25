@@ -30,6 +30,7 @@
     * actionurl - URL the form posts to.
     * sesskey - Session key.
     * profiles - List of value, id, label, description, checked, readtools, writetools.
+    * hasareas, areas - Areas the user ticks one by one: value, id, label, description, checked, tools.
     * canwrite - Whether "read and changes" is offered.
     * siteapproval - Whether changes will need approval on the site.
     * datanotice - Notice about where the data goes.
@@ -60,6 +61,17 @@
                 "readtools": [{"title": "List my courses"}],
                 "haswritetools": true,
                 "writetools": [{"title": "Save assignment grade"}]
+            }
+        ],
+        "hasareas": true,
+        "areas": [
+            {
+                "value": "reports",
+                "id": "pc-area-reports",
+                "label": "Course reports",
+                "description": "Activity logs, participation and quiz results.",
+                "checked": false,
+                "tools": [{"title": "Get course activity log"}]
             }
         ],
         "canwrite": true,
@@ -142,6 +154,22 @@
                 {{/siteapproval}}
             {{/canwrite}}
         </fieldset>
+
+        {{#hasareas}}
+            <fieldset class="mb-3">
+                <legend class="h5">{{#str}}consent_areas, local_pluginiaconnect{{/str}}</legend>
+                <p class="small">{{#str}}consent_areas_help, local_pluginiaconnect{{/str}}</p>
+                {{#areas}}
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="areas[]" id="{{id}}" value="{{value}}" {{#checked}}checked{{/checked}}>
+                        <label class="form-check-label" for="{{id}}"><strong>{{label}}</strong> &ndash; {{description}}</label>
+                        <ul class="small">
+                            {{#tools}}<li>{{title}}</li>{{/tools}}
+                        </ul>
+                    </div>
+                {{/areas}}
+            </fieldset>
+        {{/hasareas}}
 
         <p>{{datanotice}}</p>
         {{#hassitenotice}}

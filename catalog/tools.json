@@ -4660,6 +4660,12 @@
                                     },
                                     "suspended": {
                                         "type": "boolean"
+                                    },
+                                    "forum_id": {
+                                        "type": "integer"
+                                    },
+                                    "post_id": {
+                                        "type": "integer"
                                     }
                                 },
                                 "additionalProperties": false
@@ -4770,6 +4776,3025 @@
             "x-pluginia": {
                 "profile": "student",
                 "scope": "profile",
+                "write": false,
+                "approval": "none"
+            }
+        },
+        {
+            "name": "get_course_activity_log",
+            "title": "Get course activity log",
+            "description": "Returns the events of the standard log of one course the signed-in user teaches in a period of at most 31 days, newest first: when, who, the event, the activity and where it came from, optionally for one participant or one activity. Use it to see what happened in a course or what one learner did. Anonymous events, network addresses and the internal data of events are never returned, and in a course with separate groups only members of the user's own groups appear. Returns at most 50 events per call; use 'cursor' to continue.",
+            "inputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "course_id": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "Identifier of the course."
+                    },
+                    "from": {
+                        "type": "string",
+                        "format": "date-time",
+                        "maxLength": 40,
+                        "description": "Start of the period, ISO 8601 with a time zone, for example 2027-03-01T00:00:00+01:00."
+                    },
+                    "to": {
+                        "type": "string",
+                        "format": "date-time",
+                        "maxLength": 40,
+                        "description": "End of the period, ISO 8601 with a time zone. At most 31 days after the start."
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "Only events of this participant."
+                    },
+                    "activity_id": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "Only events of this activity (course module identifier from get_course_outline)."
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 50,
+                        "default": 20,
+                        "description": "Maximum number of items to return."
+                    },
+                    "cursor": {
+                        "type": "string",
+                        "maxLength": 200,
+                        "description": "Value of 'next_cursor' from a previous call, to continue from there."
+                    }
+                },
+                "required": [
+                    "course_id",
+                    "from",
+                    "to"
+                ]
+            },
+            "outputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "status",
+                    "meta"
+                ],
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ok",
+                            "error"
+                        ]
+                    },
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "course_id": {
+                                "type": "integer"
+                            },
+                            "from": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "to": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "total": {
+                                "type": "integer"
+                            },
+                            "before_retention": {
+                                "type": "boolean"
+                            },
+                            "events": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "time": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        },
+                                        "user_id": {
+                                            "type": "integer"
+                                        },
+                                        "full_name": {
+                                            "type": "string"
+                                        },
+                                        "related_user_id": {
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ]
+                                        },
+                                        "event": {
+                                            "type": "string"
+                                        },
+                                        "event_name": {
+                                            "type": "string"
+                                        },
+                                        "component": {
+                                            "type": "string"
+                                        },
+                                        "action": {
+                                            "type": "string"
+                                        },
+                                        "target": {
+                                            "type": "string"
+                                        },
+                                        "crud": {
+                                            "type": "string",
+                                            "enum": [
+                                                "c",
+                                                "r",
+                                                "u",
+                                                "d"
+                                            ]
+                                        },
+                                        "activity_id": {
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ]
+                                        },
+                                        "activity_name": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "origin": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                }
+                            },
+                            "url": {
+                                "type": "string",
+                                "format": "uri",
+                                "pattern": "^(https://|http://localhost(:[0-9]+)?(/|$))"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "error": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "code",
+                            "message"
+                        ],
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "enum": [
+                                    "permission_denied",
+                                    "profile_not_allowed",
+                                    "scope_missing",
+                                    "tool_disabled",
+                                    "out_of_scope",
+                                    "not_found",
+                                    "validation_error",
+                                    "limit_exceeded",
+                                    "rate_limited",
+                                    "user_action_required",
+                                    "site_unavailable",
+                                    "conflict",
+                                    "internal_error"
+                                ]
+                            },
+                            "message": {
+                                "type": "string"
+                            },
+                            "retry_after": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "meta": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "request_id"
+                        ],
+                        "properties": {
+                            "site": {
+                                "type": "string"
+                            },
+                            "profile": {
+                                "type": "string",
+                                "enum": [
+                                    "student",
+                                    "teacher",
+                                    "manager",
+                                    "admin"
+                                ]
+                            },
+                            "truncated": {
+                                "type": "boolean"
+                            },
+                            "next_cursor": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "request_id": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "annotations": {
+                "title": "Get course activity log",
+                "readOnlyHint": true,
+                "destructiveHint": false,
+                "idempotentHint": true,
+                "openWorldHint": false
+            },
+            "securitySchemes": [
+                {
+                    "type": "oauth2",
+                    "scopes": [
+                        "reports.read"
+                    ]
+                }
+            ],
+            "_meta": {
+                "securitySchemes": [
+                    {
+                        "type": "oauth2",
+                        "scopes": [
+                            "reports.read"
+                        ]
+                    }
+                ]
+            },
+            "x-pluginia": {
+                "profile": "teacher",
+                "scope": "reports.read",
+                "write": false,
+                "approval": "none"
+            }
+        },
+        {
+            "name": "get_activity_participation_report",
+            "title": "Get activity participation report",
+            "description": "Returns, for one activity of a course the signed-in user teaches and a period of at most 31 days, each learner with the number of times they viewed it and the number of times they posted or submitted in it, including those who did neither. Use it to see who has not opened an activity yet. Counts come from the standard log, without anonymous events, and in a course with separate groups only members of the user's own groups are listed. Returns at most 50 learners per call; use 'cursor' to continue.",
+            "inputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "activity_id": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "Course module identifier of the activity, from get_course_outline."
+                    },
+                    "from": {
+                        "type": "string",
+                        "format": "date-time",
+                        "maxLength": 40,
+                        "description": "Start of the period, ISO 8601 with a time zone, for example 2027-03-01T00:00:00+01:00."
+                    },
+                    "to": {
+                        "type": "string",
+                        "format": "date-time",
+                        "maxLength": 40,
+                        "description": "End of the period, ISO 8601 with a time zone. At most 31 days after the start."
+                    },
+                    "only_without_activity": {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "List only learners who neither viewed nor posted in the period."
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 50,
+                        "default": 20,
+                        "description": "Maximum number of items to return."
+                    },
+                    "cursor": {
+                        "type": "string",
+                        "maxLength": 200,
+                        "description": "Value of 'next_cursor' from a previous call, to continue from there."
+                    }
+                },
+                "required": [
+                    "activity_id",
+                    "from",
+                    "to"
+                ]
+            },
+            "outputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "status",
+                    "meta"
+                ],
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ok",
+                            "error"
+                        ]
+                    },
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "activity_id": {
+                                "type": "integer"
+                            },
+                            "activity_name": {
+                                "type": "string"
+                            },
+                            "from": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "to": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "learners_total": {
+                                "type": "integer"
+                            },
+                            "learners_with_activity": {
+                                "type": "integer"
+                            },
+                            "before_retention": {
+                                "type": "boolean"
+                            },
+                            "participants": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "user_id": {
+                                            "type": "integer"
+                                        },
+                                        "full_name": {
+                                            "type": "string"
+                                        },
+                                        "email": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "custom_fields": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "value": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "additionalProperties": false
+                                            }
+                                        },
+                                        "url": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "pattern": "^(https://|http://localhost(:[0-9]+)?(/|$))"
+                                        },
+                                        "views": {
+                                            "type": "integer"
+                                        },
+                                        "posts": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                }
+                            },
+                            "url": {
+                                "type": "string",
+                                "format": "uri",
+                                "pattern": "^(https://|http://localhost(:[0-9]+)?(/|$))"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "error": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "code",
+                            "message"
+                        ],
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "enum": [
+                                    "permission_denied",
+                                    "profile_not_allowed",
+                                    "scope_missing",
+                                    "tool_disabled",
+                                    "out_of_scope",
+                                    "not_found",
+                                    "validation_error",
+                                    "limit_exceeded",
+                                    "rate_limited",
+                                    "user_action_required",
+                                    "site_unavailable",
+                                    "conflict",
+                                    "internal_error"
+                                ]
+                            },
+                            "message": {
+                                "type": "string"
+                            },
+                            "retry_after": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "meta": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "request_id"
+                        ],
+                        "properties": {
+                            "site": {
+                                "type": "string"
+                            },
+                            "profile": {
+                                "type": "string",
+                                "enum": [
+                                    "student",
+                                    "teacher",
+                                    "manager",
+                                    "admin"
+                                ]
+                            },
+                            "truncated": {
+                                "type": "boolean"
+                            },
+                            "next_cursor": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "request_id": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "annotations": {
+                "title": "Get activity participation report",
+                "readOnlyHint": true,
+                "destructiveHint": false,
+                "idempotentHint": true,
+                "openWorldHint": false
+            },
+            "securitySchemes": [
+                {
+                    "type": "oauth2",
+                    "scopes": [
+                        "reports.read"
+                    ]
+                }
+            ],
+            "_meta": {
+                "securitySchemes": [
+                    {
+                        "type": "oauth2",
+                        "scopes": [
+                            "reports.read"
+                        ]
+                    }
+                ]
+            },
+            "x-pluginia": {
+                "profile": "teacher",
+                "scope": "reports.read",
+                "write": false,
+                "approval": "none"
+            }
+        },
+        {
+            "name": "get_activity_completion_report",
+            "title": "Get activity completion report",
+            "description": "Returns, for one course the signed-in user teaches, the activities that track completion and, for each tracked participant, which of them they have completed, passed or failed and how many are still pending. Use it to see who is behind on which activity. Activities hidden from the user are left out, and in a course with separate groups only members of the user's own groups are listed. Returns at most 50 participants per call; use 'cursor' to continue.",
+            "inputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "course_id": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "Identifier of the course."
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 50,
+                        "default": 20,
+                        "description": "Maximum number of items to return."
+                    },
+                    "cursor": {
+                        "type": "string",
+                        "maxLength": 200,
+                        "description": "Value of 'next_cursor' from a previous call, to continue from there."
+                    }
+                },
+                "required": [
+                    "course_id"
+                ]
+            },
+            "outputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "status",
+                    "meta"
+                ],
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ok",
+                            "error"
+                        ]
+                    },
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "course_id": {
+                                "type": "integer"
+                            },
+                            "completion_enabled": {
+                                "type": "boolean"
+                            },
+                            "participants_total": {
+                                "type": "integer"
+                            },
+                            "activities": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "activity_id": {
+                                            "type": "integer"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "type": {
+                                            "type": "string"
+                                        },
+                                        "completed_by": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                }
+                            },
+                            "participants": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "user_id": {
+                                            "type": "integer"
+                                        },
+                                        "full_name": {
+                                            "type": "string"
+                                        },
+                                        "email": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "custom_fields": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "value": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "additionalProperties": false
+                                            }
+                                        },
+                                        "url": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "pattern": "^(https://|http://localhost(:[0-9]+)?(/|$))"
+                                        },
+                                        "completed_count": {
+                                            "type": "integer"
+                                        },
+                                        "pending_count": {
+                                            "type": "integer"
+                                        },
+                                        "completed_activity_ids": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "failed_activity_ids": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "integer"
+                                            }
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                }
+                            },
+                            "url": {
+                                "type": "string",
+                                "format": "uri",
+                                "pattern": "^(https://|http://localhost(:[0-9]+)?(/|$))"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "error": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "code",
+                            "message"
+                        ],
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "enum": [
+                                    "permission_denied",
+                                    "profile_not_allowed",
+                                    "scope_missing",
+                                    "tool_disabled",
+                                    "out_of_scope",
+                                    "not_found",
+                                    "validation_error",
+                                    "limit_exceeded",
+                                    "rate_limited",
+                                    "user_action_required",
+                                    "site_unavailable",
+                                    "conflict",
+                                    "internal_error"
+                                ]
+                            },
+                            "message": {
+                                "type": "string"
+                            },
+                            "retry_after": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "meta": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "request_id"
+                        ],
+                        "properties": {
+                            "site": {
+                                "type": "string"
+                            },
+                            "profile": {
+                                "type": "string",
+                                "enum": [
+                                    "student",
+                                    "teacher",
+                                    "manager",
+                                    "admin"
+                                ]
+                            },
+                            "truncated": {
+                                "type": "boolean"
+                            },
+                            "next_cursor": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "request_id": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "annotations": {
+                "title": "Get activity completion report",
+                "readOnlyHint": true,
+                "destructiveHint": false,
+                "idempotentHint": true,
+                "openWorldHint": false
+            },
+            "securitySchemes": [
+                {
+                    "type": "oauth2",
+                    "scopes": [
+                        "reports.read"
+                    ]
+                }
+            ],
+            "_meta": {
+                "securitySchemes": [
+                    {
+                        "type": "oauth2",
+                        "scopes": [
+                            "reports.read"
+                        ]
+                    }
+                ]
+            },
+            "x-pluginia": {
+                "profile": "teacher",
+                "scope": "reports.read",
+                "write": false,
+                "approval": "none"
+            }
+        },
+        {
+            "name": "get_quiz_attempts_report",
+            "title": "Get quiz attempts report",
+            "description": "Returns, for one quiz of a course the signed-in user teaches, each learner who may attempt it with the number of attempts, the state of the last one and the highest grade, including those who have not started. Use it to see who has done a quiz and how they scored. Questions and answers are never returned, teacher previews are left out, and with separate groups only members of the user's own groups are listed. Returns at most 50 learners per call; use 'cursor' to continue.",
+            "inputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "quiz_id": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "Course module identifier of the quiz, from get_course_outline."
+                    },
+                    "only_without_attempts": {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "List only learners who have not finished any attempt."
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 50,
+                        "default": 20,
+                        "description": "Maximum number of items to return."
+                    },
+                    "cursor": {
+                        "type": "string",
+                        "maxLength": 200,
+                        "description": "Value of 'next_cursor' from a previous call, to continue from there."
+                    }
+                },
+                "required": [
+                    "quiz_id"
+                ]
+            },
+            "outputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "status",
+                    "meta"
+                ],
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ok",
+                            "error"
+                        ]
+                    },
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "quiz_id": {
+                                "type": "integer"
+                            },
+                            "quiz_name": {
+                                "type": "string"
+                            },
+                            "max_grade": {
+                                "type": "number"
+                            },
+                            "attempts_allowed": {
+                                "type": "integer"
+                            },
+                            "learners_total": {
+                                "type": "integer"
+                            },
+                            "learners_finished": {
+                                "type": "integer"
+                            },
+                            "average_best_grade": {
+                                "type": [
+                                    "number",
+                                    "null"
+                                ]
+                            },
+                            "participants": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "user_id": {
+                                            "type": "integer"
+                                        },
+                                        "full_name": {
+                                            "type": "string"
+                                        },
+                                        "email": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "custom_fields": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "value": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "additionalProperties": false
+                                            }
+                                        },
+                                        "url": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "pattern": "^(https://|http://localhost(:[0-9]+)?(/|$))"
+                                        },
+                                        "attempts": {
+                                            "type": "integer"
+                                        },
+                                        "last_attempt_state": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ],
+                                            "enum": [
+                                                "inprogress",
+                                                "overdue",
+                                                "finished",
+                                                "abandoned",
+                                                "submitted",
+                                                "notstarted",
+                                                null
+                                            ]
+                                        },
+                                        "last_attempt_at": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ],
+                                            "format": "date-time"
+                                        },
+                                        "best_grade": {
+                                            "type": [
+                                                "number",
+                                                "null"
+                                            ]
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                }
+                            },
+                            "url": {
+                                "type": "string",
+                                "format": "uri",
+                                "pattern": "^(https://|http://localhost(:[0-9]+)?(/|$))"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "error": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "code",
+                            "message"
+                        ],
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "enum": [
+                                    "permission_denied",
+                                    "profile_not_allowed",
+                                    "scope_missing",
+                                    "tool_disabled",
+                                    "out_of_scope",
+                                    "not_found",
+                                    "validation_error",
+                                    "limit_exceeded",
+                                    "rate_limited",
+                                    "user_action_required",
+                                    "site_unavailable",
+                                    "conflict",
+                                    "internal_error"
+                                ]
+                            },
+                            "message": {
+                                "type": "string"
+                            },
+                            "retry_after": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "meta": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "request_id"
+                        ],
+                        "properties": {
+                            "site": {
+                                "type": "string"
+                            },
+                            "profile": {
+                                "type": "string",
+                                "enum": [
+                                    "student",
+                                    "teacher",
+                                    "manager",
+                                    "admin"
+                                ]
+                            },
+                            "truncated": {
+                                "type": "boolean"
+                            },
+                            "next_cursor": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "request_id": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "annotations": {
+                "title": "Get quiz attempts report",
+                "readOnlyHint": true,
+                "destructiveHint": false,
+                "idempotentHint": true,
+                "openWorldHint": false
+            },
+            "securitySchemes": [
+                {
+                    "type": "oauth2",
+                    "scopes": [
+                        "reports.read"
+                    ]
+                }
+            ],
+            "_meta": {
+                "securitySchemes": [
+                    {
+                        "type": "oauth2",
+                        "scopes": [
+                            "reports.read"
+                        ]
+                    }
+                ]
+            },
+            "x-pluginia": {
+                "profile": "teacher",
+                "scope": "reports.read",
+                "write": false,
+                "approval": "none"
+            }
+        },
+        {
+            "name": "get_course_progress_summary",
+            "title": "Get course progress summary",
+            "description": "Returns figures about the learners of one course the signed-in user teaches, without naming anyone: how many there are, average and median progress percentage, how many are in each range of progress, how many completed the course, never entered it, have not entered for a number of days, and have overdue assignments. Use it to answer how a course or a group is doing; the names come from the completion, inactivity and overdue tools. With separate groups only the user's own groups are counted.",
+            "inputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "course_id": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "Identifier of the course."
+                    },
+                    "group_id": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "Count only the members of this group of the course."
+                    },
+                    "inactive_days": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 365,
+                        "default": 14,
+                        "description": "Days without entering the course after which a learner counts as inactive."
+                    }
+                },
+                "required": [
+                    "course_id"
+                ]
+            },
+            "outputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "status",
+                    "meta"
+                ],
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ok",
+                            "error"
+                        ]
+                    },
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "course_id": {
+                                "type": "integer"
+                            },
+                            "group_id": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "learners": {
+                                "type": "integer"
+                            },
+                            "completion_enabled": {
+                                "type": "boolean"
+                            },
+                            "tracked_activities": {
+                                "type": "integer"
+                            },
+                            "average_progress_percent": {
+                                "type": [
+                                    "number",
+                                    "null"
+                                ]
+                            },
+                            "median_progress_percent": {
+                                "type": [
+                                    "number",
+                                    "null"
+                                ]
+                            },
+                            "progress_ranges": {
+                                "type": "object",
+                                "properties": {
+                                    "not_started": {
+                                        "type": "integer"
+                                    },
+                                    "from_1_to_24": {
+                                        "type": "integer"
+                                    },
+                                    "from_25_to_49": {
+                                        "type": "integer"
+                                    },
+                                    "from_50_to_74": {
+                                        "type": "integer"
+                                    },
+                                    "from_75_to_99": {
+                                        "type": "integer"
+                                    },
+                                    "all_done": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "additionalProperties": false
+                            },
+                            "course_completed": {
+                                "type": "integer"
+                            },
+                            "never_entered": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "inactive": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "inactive_days": {
+                                "type": "integer"
+                            },
+                            "with_overdue_assignments": {
+                                "type": "integer"
+                            },
+                            "overdue_assignments_total": {
+                                "type": "integer"
+                            },
+                            "url": {
+                                "type": "string",
+                                "format": "uri",
+                                "pattern": "^(https://|http://localhost(:[0-9]+)?(/|$))"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "error": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "code",
+                            "message"
+                        ],
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "enum": [
+                                    "permission_denied",
+                                    "profile_not_allowed",
+                                    "scope_missing",
+                                    "tool_disabled",
+                                    "out_of_scope",
+                                    "not_found",
+                                    "validation_error",
+                                    "limit_exceeded",
+                                    "rate_limited",
+                                    "user_action_required",
+                                    "site_unavailable",
+                                    "conflict",
+                                    "internal_error"
+                                ]
+                            },
+                            "message": {
+                                "type": "string"
+                            },
+                            "retry_after": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "meta": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "request_id"
+                        ],
+                        "properties": {
+                            "site": {
+                                "type": "string"
+                            },
+                            "profile": {
+                                "type": "string",
+                                "enum": [
+                                    "student",
+                                    "teacher",
+                                    "manager",
+                                    "admin"
+                                ]
+                            },
+                            "truncated": {
+                                "type": "boolean"
+                            },
+                            "next_cursor": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "request_id": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "annotations": {
+                "title": "Get course progress summary",
+                "readOnlyHint": true,
+                "destructiveHint": false,
+                "idempotentHint": true,
+                "openWorldHint": false
+            },
+            "securitySchemes": [
+                {
+                    "type": "oauth2",
+                    "scopes": [
+                        "reports.read"
+                    ]
+                }
+            ],
+            "_meta": {
+                "securitySchemes": [
+                    {
+                        "type": "oauth2",
+                        "scopes": [
+                            "reports.read"
+                        ]
+                    }
+                ]
+            },
+            "x-pluginia": {
+                "profile": "teacher",
+                "scope": "reports.read",
+                "write": false,
+                "approval": "none"
+            }
+        },
+        {
+            "name": "list_overdue_submissions",
+            "title": "List overdue submissions",
+            "description": "Returns the learners of one course the signed-in user grades who have assignments past their due date and not submitted, each with those assignments, the due date that applies to them (overrides and extensions included) and the days overdue. Use it to see who is behind and on what. Team assignments and assignments with blind marking are left out and counted, and with separate groups only members of the user's own groups are listed. Returns at most 50 learners per call; use 'cursor' to continue.",
+            "inputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "course_id": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "Identifier of the course."
+                    },
+                    "assignment_id": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "Only this assignment (course module identifier from get_course_outline)."
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 50,
+                        "default": 20,
+                        "description": "Maximum number of items to return."
+                    },
+                    "cursor": {
+                        "type": "string",
+                        "maxLength": 200,
+                        "description": "Value of 'next_cursor' from a previous call, to continue from there."
+                    }
+                },
+                "required": [
+                    "course_id"
+                ]
+            },
+            "outputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "status",
+                    "meta"
+                ],
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ok",
+                            "error"
+                        ]
+                    },
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "course_id": {
+                                "type": "integer"
+                            },
+                            "assignments_checked": {
+                                "type": "integer"
+                            },
+                            "assignments_left_out": {
+                                "type": "integer"
+                            },
+                            "learners_behind": {
+                                "type": "integer"
+                            },
+                            "overdue_total": {
+                                "type": "integer"
+                            },
+                            "participants": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "user_id": {
+                                            "type": "integer"
+                                        },
+                                        "full_name": {
+                                            "type": "string"
+                                        },
+                                        "email": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "custom_fields": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "value": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "additionalProperties": false
+                                            }
+                                        },
+                                        "url": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "pattern": "^(https://|http://localhost(:[0-9]+)?(/|$))"
+                                        },
+                                        "overdue_count": {
+                                            "type": "integer"
+                                        },
+                                        "overdue": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "assignment_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "due_date": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "days_overdue": {
+                                                        "type": "integer"
+                                                    },
+                                                    "has_extension": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "closed": {
+                                                        "type": "boolean"
+                                                    }
+                                                },
+                                                "additionalProperties": false
+                                            }
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                }
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "error": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "code",
+                            "message"
+                        ],
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "enum": [
+                                    "permission_denied",
+                                    "profile_not_allowed",
+                                    "scope_missing",
+                                    "tool_disabled",
+                                    "out_of_scope",
+                                    "not_found",
+                                    "validation_error",
+                                    "limit_exceeded",
+                                    "rate_limited",
+                                    "user_action_required",
+                                    "site_unavailable",
+                                    "conflict",
+                                    "internal_error"
+                                ]
+                            },
+                            "message": {
+                                "type": "string"
+                            },
+                            "retry_after": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "meta": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "request_id"
+                        ],
+                        "properties": {
+                            "site": {
+                                "type": "string"
+                            },
+                            "profile": {
+                                "type": "string",
+                                "enum": [
+                                    "student",
+                                    "teacher",
+                                    "manager",
+                                    "admin"
+                                ]
+                            },
+                            "truncated": {
+                                "type": "boolean"
+                            },
+                            "next_cursor": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "request_id": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "annotations": {
+                "title": "List overdue submissions",
+                "readOnlyHint": true,
+                "destructiveHint": false,
+                "idempotentHint": true,
+                "openWorldHint": false
+            },
+            "securitySchemes": [
+                {
+                    "type": "oauth2",
+                    "scopes": [
+                        "reports.read"
+                    ]
+                }
+            ],
+            "_meta": {
+                "securitySchemes": [
+                    {
+                        "type": "oauth2",
+                        "scopes": [
+                            "reports.read"
+                        ]
+                    }
+                ]
+            },
+            "x-pluginia": {
+                "profile": "teacher",
+                "scope": "reports.read",
+                "write": false,
+                "approval": "none"
+            }
+        },
+        {
+            "name": "list_course_forums",
+            "title": "List course forums",
+            "description": "Returns the forums of one course the signed-in user teaches that they can read: name, type, number of discussions, date of the last post and whether the user may start a discussion there. Use it to find the forum to read or post in; the forum identifier is the one the other forum tools take.",
+            "inputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "course_id": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "Identifier of the course."
+                    }
+                },
+                "required": [
+                    "course_id"
+                ]
+            },
+            "outputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "status",
+                    "meta"
+                ],
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ok",
+                            "error"
+                        ]
+                    },
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "course_id": {
+                                "type": "integer"
+                            },
+                            "forums": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "forum_id": {
+                                            "type": "integer"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "enum": [
+                                                "news",
+                                                "social",
+                                                "general",
+                                                "eachuser",
+                                                "single",
+                                                "qanda",
+                                                "blog"
+                                            ]
+                                        },
+                                        "discussions": {
+                                            "type": "integer"
+                                        },
+                                        "last_post_at": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ],
+                                            "format": "date-time"
+                                        },
+                                        "can_start_discussion": {
+                                            "type": "boolean"
+                                        },
+                                        "url": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "pattern": "^(https://|http://localhost(:[0-9]+)?(/|$))"
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                }
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "error": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "code",
+                            "message"
+                        ],
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "enum": [
+                                    "permission_denied",
+                                    "profile_not_allowed",
+                                    "scope_missing",
+                                    "tool_disabled",
+                                    "out_of_scope",
+                                    "not_found",
+                                    "validation_error",
+                                    "limit_exceeded",
+                                    "rate_limited",
+                                    "user_action_required",
+                                    "site_unavailable",
+                                    "conflict",
+                                    "internal_error"
+                                ]
+                            },
+                            "message": {
+                                "type": "string"
+                            },
+                            "retry_after": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "meta": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "request_id"
+                        ],
+                        "properties": {
+                            "site": {
+                                "type": "string"
+                            },
+                            "profile": {
+                                "type": "string",
+                                "enum": [
+                                    "student",
+                                    "teacher",
+                                    "manager",
+                                    "admin"
+                                ]
+                            },
+                            "truncated": {
+                                "type": "boolean"
+                            },
+                            "next_cursor": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "request_id": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "annotations": {
+                "title": "List course forums",
+                "readOnlyHint": true,
+                "destructiveHint": false,
+                "idempotentHint": true,
+                "openWorldHint": false
+            },
+            "securitySchemes": [
+                {
+                    "type": "oauth2",
+                    "scopes": [
+                        "forums.read"
+                    ]
+                }
+            ],
+            "_meta": {
+                "securitySchemes": [
+                    {
+                        "type": "oauth2",
+                        "scopes": [
+                            "forums.read"
+                        ]
+                    }
+                ]
+            },
+            "x-pluginia": {
+                "profile": "teacher",
+                "scope": "forums.read",
+                "write": false,
+                "approval": "none"
+            }
+        },
+        {
+            "name": "list_forum_discussions",
+            "title": "List forum discussions",
+            "description": "Returns the discussions of one forum of a course the signed-in user teaches, most recent activity first: subject, who started it, number of replies, last activity and whether it is pinned or locked. Use it to find a discussion to read or answer. The forum applies its own rules on groups and timed discussions. Returns at most 50 discussions per call; use 'cursor' to continue.",
+            "inputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "forum_id": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "Course module identifier of the forum, from list_course_forums."
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 50,
+                        "default": 20,
+                        "description": "Maximum number of items to return."
+                    },
+                    "cursor": {
+                        "type": "string",
+                        "maxLength": 200,
+                        "description": "Value of 'next_cursor' from a previous call, to continue from there."
+                    }
+                },
+                "required": [
+                    "forum_id"
+                ]
+            },
+            "outputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "status",
+                    "meta"
+                ],
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ok",
+                            "error"
+                        ]
+                    },
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "forum_id": {
+                                "type": "integer"
+                            },
+                            "discussions": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "discussion_id": {
+                                            "type": "integer"
+                                        },
+                                        "first_post_id": {
+                                            "type": "integer"
+                                        },
+                                        "subject_user_content": {
+                                            "type": "string"
+                                        },
+                                        "author_user_id": {
+                                            "type": "integer"
+                                        },
+                                        "author_name": {
+                                            "type": "string"
+                                        },
+                                        "group_id": {
+                                            "type": "integer"
+                                        },
+                                        "replies": {
+                                            "type": "integer"
+                                        },
+                                        "created_at": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ],
+                                            "format": "date-time"
+                                        },
+                                        "last_activity_at": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ],
+                                            "format": "date-time"
+                                        },
+                                        "pinned": {
+                                            "type": "boolean"
+                                        },
+                                        "locked": {
+                                            "type": "boolean"
+                                        },
+                                        "can_reply": {
+                                            "type": "boolean"
+                                        },
+                                        "url": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "pattern": "^(https://|http://localhost(:[0-9]+)?(/|$))"
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                }
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "error": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "code",
+                            "message"
+                        ],
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "enum": [
+                                    "permission_denied",
+                                    "profile_not_allowed",
+                                    "scope_missing",
+                                    "tool_disabled",
+                                    "out_of_scope",
+                                    "not_found",
+                                    "validation_error",
+                                    "limit_exceeded",
+                                    "rate_limited",
+                                    "user_action_required",
+                                    "site_unavailable",
+                                    "conflict",
+                                    "internal_error"
+                                ]
+                            },
+                            "message": {
+                                "type": "string"
+                            },
+                            "retry_after": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "meta": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "request_id"
+                        ],
+                        "properties": {
+                            "site": {
+                                "type": "string"
+                            },
+                            "profile": {
+                                "type": "string",
+                                "enum": [
+                                    "student",
+                                    "teacher",
+                                    "manager",
+                                    "admin"
+                                ]
+                            },
+                            "truncated": {
+                                "type": "boolean"
+                            },
+                            "next_cursor": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "request_id": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "annotations": {
+                "title": "List forum discussions",
+                "readOnlyHint": true,
+                "destructiveHint": false,
+                "idempotentHint": true,
+                "openWorldHint": false
+            },
+            "securitySchemes": [
+                {
+                    "type": "oauth2",
+                    "scopes": [
+                        "forums.read"
+                    ]
+                }
+            ],
+            "_meta": {
+                "securitySchemes": [
+                    {
+                        "type": "oauth2",
+                        "scopes": [
+                            "forums.read"
+                        ]
+                    }
+                ]
+            },
+            "x-pluginia": {
+                "profile": "teacher",
+                "scope": "forums.read",
+                "write": false,
+                "approval": "none"
+            }
+        },
+        {
+            "name": "get_forum_discussion",
+            "title": "Get forum discussion",
+            "description": "Returns the posts of one forum discussion that the signed-in user can read, oldest first: author, date, subject, the post it answers and the text as plain text, without attachments. Use it to read a discussion before answering it; the post identifiers are the ones reply_to_forum_post takes. Hidden text is removed. Returns at most 50 posts per call; use 'cursor' to continue.",
+            "inputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "discussion_id": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "Identifier of the discussion, from list_forum_discussions."
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 50,
+                        "default": 20,
+                        "description": "Maximum number of items to return."
+                    },
+                    "cursor": {
+                        "type": "string",
+                        "maxLength": 200,
+                        "description": "Value of 'next_cursor' from a previous call, to continue from there."
+                    }
+                },
+                "required": [
+                    "discussion_id"
+                ]
+            },
+            "outputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "status",
+                    "meta"
+                ],
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ok",
+                            "error"
+                        ]
+                    },
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "discussion_id": {
+                                "type": "integer"
+                            },
+                            "forum_id": {
+                                "type": "integer"
+                            },
+                            "posts_total": {
+                                "type": "integer"
+                            },
+                            "posts": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "post_id": {
+                                            "type": "integer"
+                                        },
+                                        "parent_post_id": {
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ]
+                                        },
+                                        "author_user_id": {
+                                            "type": [
+                                                "integer",
+                                                "null"
+                                            ]
+                                        },
+                                        "author_name": {
+                                            "type": "string"
+                                        },
+                                        "posted_at": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ],
+                                            "format": "date-time"
+                                        },
+                                        "subject_user_content": {
+                                            "type": "string"
+                                        },
+                                        "message_user_content": {
+                                            "type": "string"
+                                        },
+                                        "private_reply": {
+                                            "type": "boolean"
+                                        },
+                                        "has_attachments": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                }
+                            },
+                            "url": {
+                                "type": "string",
+                                "format": "uri",
+                                "pattern": "^(https://|http://localhost(:[0-9]+)?(/|$))"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "error": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "code",
+                            "message"
+                        ],
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "enum": [
+                                    "permission_denied",
+                                    "profile_not_allowed",
+                                    "scope_missing",
+                                    "tool_disabled",
+                                    "out_of_scope",
+                                    "not_found",
+                                    "validation_error",
+                                    "limit_exceeded",
+                                    "rate_limited",
+                                    "user_action_required",
+                                    "site_unavailable",
+                                    "conflict",
+                                    "internal_error"
+                                ]
+                            },
+                            "message": {
+                                "type": "string"
+                            },
+                            "retry_after": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "meta": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "request_id"
+                        ],
+                        "properties": {
+                            "site": {
+                                "type": "string"
+                            },
+                            "profile": {
+                                "type": "string",
+                                "enum": [
+                                    "student",
+                                    "teacher",
+                                    "manager",
+                                    "admin"
+                                ]
+                            },
+                            "truncated": {
+                                "type": "boolean"
+                            },
+                            "next_cursor": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "request_id": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "annotations": {
+                "title": "Get forum discussion",
+                "readOnlyHint": true,
+                "destructiveHint": false,
+                "idempotentHint": true,
+                "openWorldHint": false
+            },
+            "securitySchemes": [
+                {
+                    "type": "oauth2",
+                    "scopes": [
+                        "forums.read"
+                    ]
+                }
+            ],
+            "_meta": {
+                "securitySchemes": [
+                    {
+                        "type": "oauth2",
+                        "scopes": [
+                            "forums.read"
+                        ]
+                    }
+                ]
+            },
+            "x-pluginia": {
+                "profile": "teacher",
+                "scope": "forums.read",
+                "write": false,
+                "approval": "none"
+            }
+        },
+        {
+            "name": "get_forum_participation_summary",
+            "title": "Get forum participation summary",
+            "description": "Returns, for one forum of a course the signed-in user teaches, each learner with the number of discussions they started, the number of replies they posted and the date of their last post, including those who have not posted, optionally within a period. Use it to see who takes part in a forum. Only posts the user could see on the forum pages are counted, and with separate groups only members of the user's own groups are listed. Returns at most 50 learners per call; use 'cursor' to continue.",
+            "inputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "forum_id": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "Course module identifier of the forum, from list_course_forums."
+                    },
+                    "from": {
+                        "type": "string",
+                        "format": "date-time",
+                        "maxLength": 40,
+                        "description": "Count only posts from this moment, ISO 8601 with a time zone."
+                    },
+                    "to": {
+                        "type": "string",
+                        "format": "date-time",
+                        "maxLength": 40,
+                        "description": "Count only posts before this moment, ISO 8601 with a time zone."
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 50,
+                        "default": 20,
+                        "description": "Maximum number of items to return."
+                    },
+                    "cursor": {
+                        "type": "string",
+                        "maxLength": 200,
+                        "description": "Value of 'next_cursor' from a previous call, to continue from there."
+                    }
+                },
+                "required": [
+                    "forum_id"
+                ]
+            },
+            "outputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "status",
+                    "meta"
+                ],
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ok",
+                            "error"
+                        ]
+                    },
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "forum_id": {
+                                "type": "integer"
+                            },
+                            "forum_name": {
+                                "type": "string"
+                            },
+                            "learners_total": {
+                                "type": "integer"
+                            },
+                            "learners_who_posted": {
+                                "type": "integer"
+                            },
+                            "participants": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "user_id": {
+                                            "type": "integer"
+                                        },
+                                        "full_name": {
+                                            "type": "string"
+                                        },
+                                        "email": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "custom_fields": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "value": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "additionalProperties": false
+                                            }
+                                        },
+                                        "url": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "pattern": "^(https://|http://localhost(:[0-9]+)?(/|$))"
+                                        },
+                                        "discussions_started": {
+                                            "type": "integer"
+                                        },
+                                        "replies": {
+                                            "type": "integer"
+                                        },
+                                        "last_post_at": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ],
+                                            "format": "date-time"
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                }
+                            },
+                            "url": {
+                                "type": "string",
+                                "format": "uri",
+                                "pattern": "^(https://|http://localhost(:[0-9]+)?(/|$))"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "error": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "code",
+                            "message"
+                        ],
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "enum": [
+                                    "permission_denied",
+                                    "profile_not_allowed",
+                                    "scope_missing",
+                                    "tool_disabled",
+                                    "out_of_scope",
+                                    "not_found",
+                                    "validation_error",
+                                    "limit_exceeded",
+                                    "rate_limited",
+                                    "user_action_required",
+                                    "site_unavailable",
+                                    "conflict",
+                                    "internal_error"
+                                ]
+                            },
+                            "message": {
+                                "type": "string"
+                            },
+                            "retry_after": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "meta": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "request_id"
+                        ],
+                        "properties": {
+                            "site": {
+                                "type": "string"
+                            },
+                            "profile": {
+                                "type": "string",
+                                "enum": [
+                                    "student",
+                                    "teacher",
+                                    "manager",
+                                    "admin"
+                                ]
+                            },
+                            "truncated": {
+                                "type": "boolean"
+                            },
+                            "next_cursor": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "request_id": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "annotations": {
+                "title": "Get forum participation summary",
+                "readOnlyHint": true,
+                "destructiveHint": false,
+                "idempotentHint": true,
+                "openWorldHint": false
+            },
+            "securitySchemes": [
+                {
+                    "type": "oauth2",
+                    "scopes": [
+                        "reports.read"
+                    ]
+                }
+            ],
+            "_meta": {
+                "securitySchemes": [
+                    {
+                        "type": "oauth2",
+                        "scopes": [
+                            "reports.read"
+                        ]
+                    }
+                ]
+            },
+            "x-pluginia": {
+                "profile": "teacher",
+                "scope": "reports.read",
+                "write": false,
+                "approval": "none"
+            }
+        },
+        {
+            "name": "get_site_activity_summary",
+            "title": "Get site activity summary",
+            "description": "Returns, for the site administrator and a period of at most 31 days, how many distinct users signed in and how many sign-ins there were, failed sign-ins, course views, distinct active users, the same figures day by day in the user's time zone, and the ten most viewed courses. Use it to answer how many visits or accesses the site had today or this week. Only counts are returned, never who; anonymous events and the guest account are left out.",
+            "inputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "from": {
+                        "type": "string",
+                        "format": "date-time",
+                        "maxLength": 40,
+                        "description": "Start of the period, ISO 8601 with a time zone, for example 2027-03-01T00:00:00+01:00."
+                    },
+                    "to": {
+                        "type": "string",
+                        "format": "date-time",
+                        "maxLength": 40,
+                        "description": "End of the period, ISO 8601 with a time zone. At most 31 days after the start."
+                    }
+                },
+                "required": [
+                    "from",
+                    "to"
+                ]
+            },
+            "outputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "status",
+                    "meta"
+                ],
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ok",
+                            "error"
+                        ]
+                    },
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "from": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "to": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "time_zone": {
+                                "type": "string"
+                            },
+                            "before_retention": {
+                                "type": "boolean"
+                            },
+                            "users_signed_in": {
+                                "type": "integer"
+                            },
+                            "sign_ins": {
+                                "type": "integer"
+                            },
+                            "failed_sign_ins": {
+                                "type": "integer"
+                            },
+                            "course_views": {
+                                "type": "integer"
+                            },
+                            "users_viewing_courses": {
+                                "type": "integer"
+                            },
+                            "active_users": {
+                                "type": "integer"
+                            },
+                            "days": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "date": {
+                                            "type": "string"
+                                        },
+                                        "users_signed_in": {
+                                            "type": "integer"
+                                        },
+                                        "sign_ins": {
+                                            "type": "integer"
+                                        },
+                                        "course_views": {
+                                            "type": "integer"
+                                        },
+                                        "users_viewing_courses": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                }
+                            },
+                            "top_courses": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "course_id": {
+                                            "type": "integer"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "views": {
+                                            "type": "integer"
+                                        },
+                                        "distinct_users": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                }
+                            },
+                            "url": {
+                                "type": "string",
+                                "format": "uri",
+                                "pattern": "^(https://|http://localhost(:[0-9]+)?(/|$))"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "error": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "code",
+                            "message"
+                        ],
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "enum": [
+                                    "permission_denied",
+                                    "profile_not_allowed",
+                                    "scope_missing",
+                                    "tool_disabled",
+                                    "out_of_scope",
+                                    "not_found",
+                                    "validation_error",
+                                    "limit_exceeded",
+                                    "rate_limited",
+                                    "user_action_required",
+                                    "site_unavailable",
+                                    "conflict",
+                                    "internal_error"
+                                ]
+                            },
+                            "message": {
+                                "type": "string"
+                            },
+                            "retry_after": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "meta": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "request_id"
+                        ],
+                        "properties": {
+                            "site": {
+                                "type": "string"
+                            },
+                            "profile": {
+                                "type": "string",
+                                "enum": [
+                                    "student",
+                                    "teacher",
+                                    "manager",
+                                    "admin"
+                                ]
+                            },
+                            "truncated": {
+                                "type": "boolean"
+                            },
+                            "next_cursor": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "request_id": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "annotations": {
+                "title": "Get site activity summary",
+                "readOnlyHint": true,
+                "destructiveHint": false,
+                "idempotentHint": true,
+                "openWorldHint": false
+            },
+            "securitySchemes": [
+                {
+                    "type": "oauth2",
+                    "scopes": [
+                        "reports.read"
+                    ]
+                }
+            ],
+            "_meta": {
+                "securitySchemes": [
+                    {
+                        "type": "oauth2",
+                        "scopes": [
+                            "reports.read"
+                        ]
+                    }
+                ]
+            },
+            "x-pluginia": {
+                "profile": "admin",
+                "scope": "reports.read",
+                "write": false,
+                "approval": "none"
+            }
+        },
+        {
+            "name": "list_failed_tasks",
+            "title": "List failed tasks",
+            "description": "Returns, for the site administrator, the scheduled tasks that are failing, the ad hoc tasks waiting after a failure and the latest failed runs in the task log, each run with an excerpt of its output of at most 2000 characters. Use it to find out why background processing fails. Server paths, network addresses and e-mail addresses are replaced in the excerpt, and an excerpt that looks like it holds a password, key or token is withheld whole. Task data is never returned.",
+            "inputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {}
+            },
+            "outputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "status",
+                    "meta"
+                ],
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ok",
+                            "error"
+                        ]
+                    },
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "task_log_enabled": {
+                                "type": "boolean"
+                            },
+                            "failing_scheduled_tasks": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "component": {
+                                            "type": "string"
+                                        },
+                                        "classname": {
+                                            "type": "string"
+                                        },
+                                        "fail_delay_seconds": {
+                                            "type": "integer"
+                                        },
+                                        "last_run": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ],
+                                            "format": "date-time"
+                                        },
+                                        "next_run": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ],
+                                            "format": "date-time"
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                }
+                            },
+                            "failed_adhoc_tasks": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "component": {
+                                            "type": "string"
+                                        },
+                                        "classname": {
+                                            "type": "string"
+                                        },
+                                        "fail_delay_seconds": {
+                                            "type": "integer"
+                                        },
+                                        "queued_at": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ],
+                                            "format": "date-time"
+                                        },
+                                        "next_run": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ],
+                                            "format": "date-time"
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                }
+                            },
+                            "failed_adhoc_total": {
+                                "type": "integer"
+                            },
+                            "recent_failed_runs": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "kind": {
+                                            "type": "string",
+                                            "enum": [
+                                                "scheduled",
+                                                "adhoc"
+                                            ]
+                                        },
+                                        "component": {
+                                            "type": "string"
+                                        },
+                                        "classname": {
+                                            "type": "string"
+                                        },
+                                        "started_at": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ],
+                                            "format": "date-time"
+                                        },
+                                        "duration_seconds": {
+                                            "type": "number"
+                                        },
+                                        "output_excerpt_user_content": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "output_note": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                }
+                            },
+                            "url": {
+                                "type": "string",
+                                "format": "uri",
+                                "pattern": "^(https://|http://localhost(:[0-9]+)?(/|$))"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "error": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "code",
+                            "message"
+                        ],
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "enum": [
+                                    "permission_denied",
+                                    "profile_not_allowed",
+                                    "scope_missing",
+                                    "tool_disabled",
+                                    "out_of_scope",
+                                    "not_found",
+                                    "validation_error",
+                                    "limit_exceeded",
+                                    "rate_limited",
+                                    "user_action_required",
+                                    "site_unavailable",
+                                    "conflict",
+                                    "internal_error"
+                                ]
+                            },
+                            "message": {
+                                "type": "string"
+                            },
+                            "retry_after": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "meta": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "request_id"
+                        ],
+                        "properties": {
+                            "site": {
+                                "type": "string"
+                            },
+                            "profile": {
+                                "type": "string",
+                                "enum": [
+                                    "student",
+                                    "teacher",
+                                    "manager",
+                                    "admin"
+                                ]
+                            },
+                            "truncated": {
+                                "type": "boolean"
+                            },
+                            "next_cursor": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "request_id": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "annotations": {
+                "title": "List failed tasks",
+                "readOnlyHint": true,
+                "destructiveHint": false,
+                "idempotentHint": true,
+                "openWorldHint": false
+            },
+            "securitySchemes": [
+                {
+                    "type": "oauth2",
+                    "scopes": [
+                        "site.read"
+                    ]
+                }
+            ],
+            "_meta": {
+                "securitySchemes": [
+                    {
+                        "type": "oauth2",
+                        "scopes": [
+                            "site.read"
+                        ]
+                    }
+                ]
+            },
+            "x-pluginia": {
+                "profile": "admin",
+                "scope": "site.read",
+                "write": false,
+                "approval": "none"
+            }
+        },
+        {
+            "name": "get_site_checks",
+            "title": "Get site checks",
+            "description": "Returns, for the site administrator, the result of the status, security or performance checks of the site: each check with its name, component, state (ok, info, warning, error, critical, unknown or not applicable) and a plain text summary. Use it to see what needs attention on the site. The checks run when called; one that fails is reported as unknown, and those left when the time budget runs out are reported as not run.",
+            "inputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "status",
+                            "security",
+                            "performance"
+                        ],
+                        "default": "status",
+                        "description": "Which checks to run."
+                    },
+                    "only_problems": {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "Return only checks whose state is warning, error, critical or unknown."
+                    }
+                }
+            },
+            "outputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "status",
+                    "meta"
+                ],
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ok",
+                            "error"
+                        ]
+                    },
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "status",
+                                    "security",
+                                    "performance"
+                                ]
+                            },
+                            "checks_total": {
+                                "type": "integer"
+                            },
+                            "checks": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "component": {
+                                            "type": "string"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "enum": [
+                                                "na",
+                                                "ok",
+                                                "info",
+                                                "unknown",
+                                                "warning",
+                                                "error",
+                                                "critical",
+                                                "not_run"
+                                            ]
+                                        },
+                                        "summary": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                }
+                            },
+                            "url": {
+                                "type": "string",
+                                "format": "uri",
+                                "pattern": "^(https://|http://localhost(:[0-9]+)?(/|$))"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "error": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "code",
+                            "message"
+                        ],
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "enum": [
+                                    "permission_denied",
+                                    "profile_not_allowed",
+                                    "scope_missing",
+                                    "tool_disabled",
+                                    "out_of_scope",
+                                    "not_found",
+                                    "validation_error",
+                                    "limit_exceeded",
+                                    "rate_limited",
+                                    "user_action_required",
+                                    "site_unavailable",
+                                    "conflict",
+                                    "internal_error"
+                                ]
+                            },
+                            "message": {
+                                "type": "string"
+                            },
+                            "retry_after": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "meta": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "request_id"
+                        ],
+                        "properties": {
+                            "site": {
+                                "type": "string"
+                            },
+                            "profile": {
+                                "type": "string",
+                                "enum": [
+                                    "student",
+                                    "teacher",
+                                    "manager",
+                                    "admin"
+                                ]
+                            },
+                            "truncated": {
+                                "type": "boolean"
+                            },
+                            "next_cursor": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "request_id": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "annotations": {
+                "title": "Get site checks",
+                "readOnlyHint": true,
+                "destructiveHint": false,
+                "idempotentHint": true,
+                "openWorldHint": false
+            },
+            "securitySchemes": [
+                {
+                    "type": "oauth2",
+                    "scopes": [
+                        "site.read"
+                    ]
+                }
+            ],
+            "_meta": {
+                "securitySchemes": [
+                    {
+                        "type": "oauth2",
+                        "scopes": [
+                            "site.read"
+                        ]
+                    }
+                ]
+            },
+            "x-pluginia": {
+                "profile": "admin",
+                "scope": "site.read",
                 "write": false,
                 "approval": "none"
             }
@@ -6648,6 +9673,403 @@
                 "scope": "users.write",
                 "write": true,
                 "approval": "approval"
+            }
+        },
+        {
+            "name": "post_forum_discussion",
+            "title": "Post forum discussion",
+            "description": "Starts one discussion, with a subject and a plain text message and without attachments, in a forum of a course, published as the signed-in user; announcements go through post_course_announcement, and in a forum with groups the group is needed unless the user may post to all of them. Subscribers are e-mailed and a published post cannot be withdrawn through this tool. Called without 'confirm_token', it changes nothing and returns a summary of the change plus a token valid for 5 minutes; called again with the same arguments and that token, it applies the change. Where approval is required it returns 'approval_pending' with a link to a page on the site where the signed-in user approves or rejects the change. Repeating a confirmed call returns the stored result, while a new call without 'idempotency_key' is a new, separate change.",
+            "inputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "forum_id": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "Course module identifier of the forum, from list_course_forums."
+                    },
+                    "subject": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 255,
+                        "description": "Subject line."
+                    },
+                    "message": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 4000,
+                        "description": "Text of the post, as plain text."
+                    },
+                    "group_id": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "Group the discussion is for, in a forum that uses groups."
+                    },
+                    "confirm_token": {
+                        "type": "string",
+                        "maxLength": 100,
+                        "description": "Token returned by the first call, sent back with the same arguments to apply the change."
+                    },
+                    "idempotency_key": {
+                        "type": "string",
+                        "minLength": 8,
+                        "maxLength": 64,
+                        "description": "Optional key chosen by the caller. Repeating a call with the same key and arguments returns the stored result instead of requesting the change again."
+                    }
+                },
+                "required": [
+                    "forum_id",
+                    "subject",
+                    "message"
+                ]
+            },
+            "outputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "status",
+                    "meta"
+                ],
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ok",
+                            "error",
+                            "confirmation_required",
+                            "approval_pending"
+                        ]
+                    },
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "forum_id": {
+                                "type": "integer"
+                            },
+                            "discussion_id": {
+                                "type": "integer"
+                            },
+                            "subject": {
+                                "type": "string"
+                            },
+                            "url": {
+                                "type": "string",
+                                "format": "uri",
+                                "pattern": "^(https://|http://localhost(:[0-9]+)?(/|$))"
+                            },
+                            "summary": {
+                                "type": "string"
+                            },
+                            "confirm_token": {
+                                "type": "string"
+                            },
+                            "expires_in": {
+                                "type": "integer"
+                            },
+                            "action_id": {
+                                "type": "integer"
+                            },
+                            "approval_url": {
+                                "type": "string",
+                                "format": "uri",
+                                "pattern": "^(https://|http://localhost(:[0-9]+)?(/|$))"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "error": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "code",
+                            "message"
+                        ],
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "enum": [
+                                    "permission_denied",
+                                    "profile_not_allowed",
+                                    "scope_missing",
+                                    "tool_disabled",
+                                    "out_of_scope",
+                                    "not_found",
+                                    "validation_error",
+                                    "limit_exceeded",
+                                    "rate_limited",
+                                    "user_action_required",
+                                    "site_unavailable",
+                                    "conflict",
+                                    "internal_error"
+                                ]
+                            },
+                            "message": {
+                                "type": "string"
+                            },
+                            "retry_after": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "meta": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "request_id"
+                        ],
+                        "properties": {
+                            "site": {
+                                "type": "string"
+                            },
+                            "profile": {
+                                "type": "string",
+                                "enum": [
+                                    "student",
+                                    "teacher",
+                                    "manager",
+                                    "admin"
+                                ]
+                            },
+                            "truncated": {
+                                "type": "boolean"
+                            },
+                            "next_cursor": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "request_id": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "annotations": {
+                "title": "Post forum discussion",
+                "readOnlyHint": false,
+                "destructiveHint": true,
+                "idempotentHint": false,
+                "openWorldHint": false
+            },
+            "securitySchemes": [
+                {
+                    "type": "oauth2",
+                    "scopes": [
+                        "forums.write"
+                    ]
+                }
+            ],
+            "_meta": {
+                "securitySchemes": [
+                    {
+                        "type": "oauth2",
+                        "scopes": [
+                            "forums.write"
+                        ]
+                    }
+                ]
+            },
+            "x-pluginia": {
+                "profile": "teacher",
+                "scope": "forums.write",
+                "write": true,
+                "approval": "confirm"
+            }
+        },
+        {
+            "name": "reply_to_forum_post",
+            "title": "Reply to forum post",
+            "description": "Publishes one plain text reply to a post of a forum discussion as the signed-in user, never private and never with attachments, and the forum decides whether it is allowed (locked discussions, cut-off dates, groups); it does not edit or delete any post. Subscribers are e-mailed and a published reply cannot be withdrawn through this tool. Called without 'confirm_token', it changes nothing and returns a summary of the change plus a token valid for 5 minutes; called again with the same arguments and that token, it applies the change. Where approval is required it returns 'approval_pending' with a link to a page on the site where the signed-in user approves or rejects the change. Repeating a confirmed call returns the stored result, while a new call without 'idempotency_key' is a new, separate change.",
+            "inputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "post_id": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "description": "Identifier of the post to answer, from get_forum_discussion."
+                    },
+                    "message": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 4000,
+                        "description": "Text of the reply, as plain text."
+                    },
+                    "subject": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 255,
+                        "description": "Subject line. By default, the subject of the post answered with the usual prefix."
+                    },
+                    "confirm_token": {
+                        "type": "string",
+                        "maxLength": 100,
+                        "description": "Token returned by the first call, sent back with the same arguments to apply the change."
+                    },
+                    "idempotency_key": {
+                        "type": "string",
+                        "minLength": 8,
+                        "maxLength": 64,
+                        "description": "Optional key chosen by the caller. Repeating a call with the same key and arguments returns the stored result instead of requesting the change again."
+                    }
+                },
+                "required": [
+                    "post_id",
+                    "message"
+                ]
+            },
+            "outputSchema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "status",
+                    "meta"
+                ],
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "ok",
+                            "error",
+                            "confirmation_required",
+                            "approval_pending"
+                        ]
+                    },
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "discussion_id": {
+                                "type": "integer"
+                            },
+                            "post_id": {
+                                "type": "integer"
+                            },
+                            "url": {
+                                "type": "string",
+                                "format": "uri",
+                                "pattern": "^(https://|http://localhost(:[0-9]+)?(/|$))"
+                            },
+                            "summary": {
+                                "type": "string"
+                            },
+                            "confirm_token": {
+                                "type": "string"
+                            },
+                            "expires_in": {
+                                "type": "integer"
+                            },
+                            "action_id": {
+                                "type": "integer"
+                            },
+                            "approval_url": {
+                                "type": "string",
+                                "format": "uri",
+                                "pattern": "^(https://|http://localhost(:[0-9]+)?(/|$))"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "error": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "code",
+                            "message"
+                        ],
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "enum": [
+                                    "permission_denied",
+                                    "profile_not_allowed",
+                                    "scope_missing",
+                                    "tool_disabled",
+                                    "out_of_scope",
+                                    "not_found",
+                                    "validation_error",
+                                    "limit_exceeded",
+                                    "rate_limited",
+                                    "user_action_required",
+                                    "site_unavailable",
+                                    "conflict",
+                                    "internal_error"
+                                ]
+                            },
+                            "message": {
+                                "type": "string"
+                            },
+                            "retry_after": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "meta": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "request_id"
+                        ],
+                        "properties": {
+                            "site": {
+                                "type": "string"
+                            },
+                            "profile": {
+                                "type": "string",
+                                "enum": [
+                                    "student",
+                                    "teacher",
+                                    "manager",
+                                    "admin"
+                                ]
+                            },
+                            "truncated": {
+                                "type": "boolean"
+                            },
+                            "next_cursor": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "request_id": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "annotations": {
+                "title": "Reply to forum post",
+                "readOnlyHint": false,
+                "destructiveHint": true,
+                "idempotentHint": false,
+                "openWorldHint": false
+            },
+            "securitySchemes": [
+                {
+                    "type": "oauth2",
+                    "scopes": [
+                        "forums.write"
+                    ]
+                }
+            ],
+            "_meta": {
+                "securitySchemes": [
+                    {
+                        "type": "oauth2",
+                        "scopes": [
+                            "forums.write"
+                        ]
+                    }
+                ]
+            },
+            "x-pluginia": {
+                "profile": "teacher",
+                "scope": "forums.write",
+                "write": true,
+                "approval": "confirm"
             }
         }
     ]

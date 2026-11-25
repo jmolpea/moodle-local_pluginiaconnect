@@ -68,7 +68,7 @@ final class mcp_write_tools_test extends \advanced_testcase {
     /** @var string[] Names of the write tools. */
     private const WRITE_TOOLS = ['save_assignment_grade', 'post_course_announcement', 'send_message_to_participants',
         'set_activity_visibility', 'update_assignment_dates', 'enrol_users_in_course', 'set_enrolment_status',
-        'create_course', 'set_user_suspension'];
+        'create_course', 'set_user_suspension', 'post_forum_discussion', 'reply_to_forum_post'];
 
     /** @var \stdClass Category. */
     private $category;
@@ -88,6 +88,10 @@ final class mcp_write_tools_test extends \advanced_testcase {
     private \stdClass $page;
     /** @var \stdClass News forum. */
     private \stdClass $news;
+    /** @var \stdClass General forum. */
+    private \stdClass $forum;
+    /** @var \stdClass First post of a discussion of the general forum, written by a student. */
+    private \stdClass $post;
     /** @var \stdClass A user who is enrolled nowhere. */
     private \stdClass $outsider;
 
@@ -130,6 +134,12 @@ final class mcp_write_tools_test extends \advanced_testcase {
         $this->page = $generator->create_module('page', ['course' => $this->course->id, 'name' => 'Unit 3 test']);
         $this->news = $generator->create_module('forum', ['course' => $this->course->id, 'type' => 'news',
             'name' => 'Announcements']);
+        $this->forum = $generator->create_module('forum', ['course' => $this->course->id, 'type' => 'general',
+            'name' => 'Questions']);
+        $discussion = $generator->get_plugin_generator('mod_forum')->create_discussion(['course' => $this->course->id,
+            'forum' => $this->forum->id, 'userid' => $this->student->id, 'name' => 'Doubt on unit 3',
+            'message' => '<p>Is chapter 4 included?</p>']);
+        $this->post = (object) ['id' => (int) $discussion->firstpost];
 
         \local_pluginiaconnect_mcp_fixture::enable(['gatewayenabled' => 1]);
         foreach (self::WRITE_TOOLS as $tool) {
@@ -271,6 +281,7 @@ final class mcp_write_tools_test extends \advanced_testcase {
             $DB->get_records_menu('course_modules', null, 'id', 'id, visible'),
             $DB->count_records('assign_grades'),
             $DB->count_records('forum_discussions'),
+            $DB->count_records('forum_posts'),
             $DB->count_records('messages'),
             array_values($DB->get_records('assign', null, 'id', 'id, allowsubmissionsfromdate, duedate, cutoffdate')),
             $DB->get_records_menu('user_enrolments', null, 'id', 'id, status'),
@@ -322,6 +333,10 @@ final class mcp_write_tools_test extends \advanced_testcase {
                 'full_name' => 'Welcome 2027', 'short_name' => 'WELCOME27'], 'manager', false, 'confirmation_required'],
             'set_user_suspension' => [get_admin(), 'admin', ['user_id' => (int) $this->outsider->id, 'suspended' => true],
                 'admin', false, 'approval_pending'],
+            'post_forum_discussion' => [$this->teacher, 'teacher', ['forum_id' => (int) $this->forum->cmid,
+                'subject' => 'Exam topics', 'message' => 'Chapters 1 to 4.'], 'teacher', true, 'confirmation_required'],
+            'reply_to_forum_post' => [$this->teacher, 'teacher', ['post_id' => (int) $this->post->id,
+                'message' => 'Yes, chapter 4 is included.'], 'teacher', true, 'confirmation_required'],
         ];
     }
 
@@ -341,7 +356,7 @@ final class mcp_write_tools_test extends \advanced_testcase {
             $this->assertNotSame('', $result->envelope['data']['summary'], $tool);
             $this->assertSame($before, $this->fingerprint(), "{$tool} changed something on its first call");
         }
-        $this->assertSame(9, $DB->count_records(action_store::TABLE, ['status' => 'pending']));
+        $this->assertSame(11, $DB->count_records(action_store::TABLE, ['status' => 'pending']));
         $this->assertSame(0, $DB->count_records(action_store::TABLE, ['status' => 'executed']));
     }
 
@@ -583,7 +598,7 @@ final class mcp_write_tools_test extends \advanced_testcase {
         $this->assertEquals($this->teacher->id, $post->userid, 'The announcement is published as the connected user');
         $this->assertStringNotContainsString('<script>', $post->message, 'The text is stored as escaped plain text');
         $this->assertStringContainsString('&lt;script&gt;', $post->message);
-        $this->assertSame(1, $DB->count_records('forum_discussions'));
+        $this->assertSame(1, $DB->count_records('forum_discussions', ['forum' => $this->news->id]));
 
         $this->assertSame('validation_error', $this->code($this->teacher, 'post_course_announcement', ['subject' => ''] + $args));
         $this->assertSame('validation_error', $this->code(
@@ -606,7 +621,7 @@ final class mcp_write_tools_test extends \advanced_testcase {
         $DB->delete_records('forum_discussions', ['id' => $plain['discussion_id']]);
         $this->assertSame('not_found', $this->code($this->teacher, 'post_course_announcement', ['course_id' => 99999999] + $args));
         $this->assertSame('profile_not_allowed', $this->code($this->student, 'post_course_announcement', $args));
-        $this->assertSame(1, $DB->count_records('forum_discussions'));
+        $this->assertSame(1, $DB->count_records('forum_discussions', ['forum' => $this->news->id]));
 
         // A course without a news forum gets none created.
         $this->setAdminUser();
@@ -1147,8 +1162,8 @@ final class mcp_write_tools_test extends \advanced_testcase {
         // Roles that may make changes in the course, at site level and in the category.
         $canwrite = ['editingteacher', 'manager', 'admin'];
         $calls = $this->valid_calls();
-        $this->assertCount(31, tool_registry::all());
-        $this->assertCount(9, $calls);
+        $this->assertCount(46, tool_registry::base());
+        $this->assertCount(11, $calls);
         $before = $this->fingerprint();
 
         $cases = 0;
@@ -1191,7 +1206,7 @@ final class mcp_write_tools_test extends \advanced_testcase {
             }
         }
         $sink->close();
-        $this->assertSame(9 * 4 * 6 * 2 * 2, $cases, 'No cell of the matrix without a case');
+        $this->assertSame(11 * 4 * 6 * 2 * 2, $cases, 'No cell of the matrix without a case');
         $this->assertSame($before, $this->fingerprint(), 'Not one of the calls of the matrix changed anything');
     }
 }

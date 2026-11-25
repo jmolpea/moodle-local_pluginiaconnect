@@ -123,7 +123,8 @@ final class mcp_catalog_test extends \advanced_testcase {
                 $this->assertIsArray($class::output_fields($candidate));
             }
         }
-        $this->assertCount(31, $names);
+        $this->assertCount(46, tool_registry::base());
+        $this->assertGreaterThanOrEqual(46, count($names));
     }
 
     public function test_instruction_patterns_catch_bad_descriptions(): void {
@@ -153,7 +154,7 @@ final class mcp_catalog_test extends \advanced_testcase {
             'Run php local/pluginiaconnect/cli/export_catalog.php'
         );
         $catalog = json_decode(file_get_contents($file), true);
-        $this->assertCount(count(tool_registry::all()), $catalog['tools']);
+        $this->assertCount(count(tool_registry::base()), $catalog['tools']);
         $this->assertStringContainsString('"properties": {}', file_get_contents($file));
     }
 
@@ -204,7 +205,7 @@ final class mcp_catalog_test extends \advanced_testcase {
                 $this->assertDoesNotMatchRegularExpression($pattern, (string) $property, "{$name}.{$property}");
             }
         }
-        $this->assertSame(9, $writes);
+        $this->assertSame(11, $writes);
         foreach (['as_user', 'author_id', 'from_user', 'on_behalf_of', 'sender_id'] as $bad) {
             $this->assertMatchesRegularExpression($pattern, $bad);
         }

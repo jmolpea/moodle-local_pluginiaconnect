@@ -314,7 +314,17 @@ final class eligibility_test extends \advanced_testcase {
         [$nonediting] = $this->user_in_course('teacher');
 
         $readonly = scope::granted(null, profile::TEACHER, false, $editing->id);
-        $this->assertSame(['profile', 'courses.read', 'grades.read', 'participants.read', 'offline_access'], $readonly);
+        // The scopes of the areas are cut later, by the boxes the user ticks on the consent page.
+        $this->assertSame(['profile', 'courses.read', 'grades.read', 'participants.read', 'reports.read', 'forums.read',
+            'extensions.read', 'offline_access'], $readonly);
+        $this->assertSame(
+            ['profile', 'courses.read', 'grades.read', 'participants.read', 'offline_access'],
+            scope::within_areas($readonly, [])
+        );
+        $this->assertSame(
+            ['profile', 'courses.read', 'grades.read', 'participants.read', 'forums.read', 'offline_access'],
+            scope::within_areas($readonly, ['forums'])
+        );
 
         $write = scope::granted(null, profile::TEACHER, true, $editing->id);
         $this->assertContains('grades.write', $write);

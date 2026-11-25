@@ -145,6 +145,9 @@ if (data_submitted()) {
                 (int) $USER->id,
                 site_policy::scopes_with_active_tools($profile)
             );
+            // The scopes of an area are granted only when the user ticked its box (amendment 2, D22).
+            $areas = array_intersect(optional_param_array('areas', [], PARAM_ALPHA), array_keys(scope::AREAS));
+            $scopes = scope::within_areas($scopes, array_values($areas));
             $leave($request->success_url(code_service::create($request, (int) $USER->id, $profile, $scopes)));
         }
     }

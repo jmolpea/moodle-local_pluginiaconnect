@@ -15,9 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Generates catalog/tools.json from the tool definitions.
+ * Generates catalog/tools.json from the tool definitions, or the catalogue of one
+ * whitelisted Pluginia plugin with --component (its pluginiaconnect/tools.json).
  *
- * The file is the source of truth shared with the gateway. Continuous
+ * The files are the source of truth shared with the gateway. Continuous
  * integration runs this script with --check and fails when the committed file
  * differs from the definitions.
  *
@@ -31,9 +32,13 @@ define('CLI_SCRIPT', true);
 require(__DIR__ . '/../../../config.php');
 require_once($CFG->libdir . '/clilib.php');
 
+use local_pluginiaconnect\extension\loader;
 use local_pluginiaconnect\local\mcp\tool_registry;
 
-[$options, $unrecognised] = cli_get_params(['check' => false, 'help' => false], ['h' => 'help']);
+[$options, $unrecognised] = cli_get_params(
+    ['check' => false, 'component' => '', 'help' => false],
+    ['h' => 'help']
+);
 
 if ($unrecognised) {
     cli_error(get_string('cliunknowoption', 'admin', implode(PHP_EOL . '  ', $unrecognised)));
@@ -43,24 +48,51 @@ if ($options['help']) {
     cli_writeln('Writes catalog/tools.json from the tool definitions of the plugin.');
     cli_writeln('');
     cli_writeln('Options:');
-    cli_writeln('  --check     Do not write; exit with status 1 when the file differs from the definitions.');
-    cli_writeln('  -h, --help  Show this help.');
+    cli_writeln('  --component=NAME  Write instead the catalogue of a whitelisted Pluginia plugin, to its');
+    cli_writeln('                    pluginiaconnect/tools.json. The plugin must be installed.');
+    cli_writeln('  --check           Do not write; exit with status 1 when the file differs from the definitions.');
+    cli_writeln('  -h, --help        Show this help.');
     exit(0);
 }
 
-$file = __DIR__ . '/../catalog/tools.json';
-$expected = tool_registry::catalog_json();
+$component = clean_param((string) $options['component'], PARAM_COMPONENT);
+if ($component !== '') {
+    if (!array_key_exists($component, loader::components())) {
+        cli_error("{$component} is not on the whitelist of the extension point.");
+    }
+    $report = loader::report()[$component];
+    if ($report['status'] !== 'loaded') {
+        cli_error("{$component} declares no tool that the connector accepts: {$report['status']}.");
+    }
+    foreach ($report['rejected'] as $name => $reason) {
+        cli_problem("Refused {$name}: {$reason}");
+    }
+    $file = core_component::get_component_directory($component) . '/pluginiaconnect/tools.json';
+    $label = "{$component}/pluginiaconnect/tools.json";
+    $expected = loader::catalog_json($component);
+    $count = count($report['tools']);
+    $command = "php local/pluginiaconnect/cli/export_catalog.php --component={$component}";
+} else {
+    $file = __DIR__ . '/../catalog/tools.json';
+    $label = 'catalog/tools.json';
+    $expected = tool_registry::catalog_json();
+    $count = count(tool_registry::base());
+    $command = 'php local/pluginiaconnect/cli/export_catalog.php';
+}
 
 if ($options['check']) {
     $current = is_readable($file) ? str_replace("\r\n", "\n", (string) file_get_contents($file)) : '';
     if ($current !== $expected) {
-        cli_error('catalog/tools.json is out of date. Run: php local/pluginiaconnect/cli/export_catalog.php');
+        cli_error("{$label} is out of date. Run: {$command}");
     }
-    cli_writeln('catalog/tools.json is up to date.');
+    cli_writeln("{$label} is up to date.");
     exit(0);
 }
 
-if (file_put_contents($file, $expected) === false) {
-    cli_error('catalog/tools.json could not be written.');
+if (!is_dir(dirname($file))) {
+    mkdir(dirname($file), 0777, true);
 }
-cli_writeln('catalog/tools.json written: ' . count(tool_registry::all()) . ' tools.');
+if (file_put_contents($file, $expected) === false) {
+    cli_error("{$label} could not be written.");
+}
+cli_writeln("{$label} written: {$count} tools.");

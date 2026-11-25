@@ -108,6 +108,62 @@ final class consent_page implements \renderable, \templatable {
     }
 
     /**
+     * Areas the user may tick on this consent (amendment 2, D21 and D22): those with at least one action switched
+     * on for a profile the user may choose, within the scopes the application asked for.
+     *
+     * @param authorization_request $request Request.
+     * @param int $userid User who is asked.
+     * @param string[] $profiles Profiles the user may choose.
+     * @param bool $canwrite Whether "read and changes" may be offered.
+     * @return array Area => titles of its tools, in the order of the areas.
+     */
+    public static function offered_areas(authorization_request $request, int $userid, array $profiles, bool $canwrite): array {
+        $areas = [];
+        foreach (array_keys(scope::AREAS) as $area) {
+            foreach ($profiles as $profile) {
+                $active = site_policy::scopes_with_active_tools($profile);
+                $granted = scope::granted($request->scopes, $profile, $canwrite, $userid, $active);
+                $within = array_values(array_intersect($granted, scope::AREAS[$area]));
+                if ($within) {
+                    $areas[$area] = array_values(array_unique(array_merge(
+                        $areas[$area] ?? [],
+                        site_policy::describe_tools($profile, $within)
+                    )));
+                }
+            }
+        }
+        return $areas;
+    }
+
+    /**
+     * Areas the user already granted to this application in a connection that is still active: their boxes
+     * start ticked, every other box starts empty.
+     *
+     * @param authorization_request $request Request.
+     * @param int $userid User who is asked.
+     * @return string[]
+     */
+    public static function previous_areas(authorization_request $request, int $userid): array {
+        global $DB;
+        $areas = [];
+        $grants = $DB->get_records(
+            'local_pluginiaconnect_grant',
+            ['userid' => $userid, 'clientid' => $request->client->id, 'status' => 1],
+            '',
+            'id, scopes'
+        );
+        foreach ($grants as $grant) {
+            foreach (scope::parse((string) $grant->scopes) as $name) {
+                $area = scope::area_of($name);
+                if ($area !== null) {
+                    $areas[$area] = true;
+                }
+            }
+        }
+        return array_keys($areas);
+    }
+
+    /**
      * Company that will receive the data the user asks for, when it can be told.
      *
      * @param authorization_request $request Request.
@@ -145,9 +201,15 @@ final class consent_page implements \renderable, \templatable {
         $canwrite = $this->canwrite && self::offers_changes($request, (int) $this->user->id, $this->profiles);
         foreach ($this->profiles as $index => $profile) {
             $active = site_policy::scopes_with_active_tools($profile);
-            $readscopes = scope::granted($request->scopes, $profile, false, (int) $this->user->id, $active);
-            $allscopes = $canwrite
-                ? scope::granted($request->scopes, $profile, true, (int) $this->user->id, $active) : $readscopes;
+            // The tools of the areas are listed under their own boxes.
+            $readscopes = scope::within_areas(
+                scope::granted($request->scopes, $profile, false, (int) $this->user->id, $active),
+                []
+            );
+            $allscopes = $canwrite ? scope::within_areas(
+                scope::granted($request->scopes, $profile, true, (int) $this->user->id, $active),
+                []
+            ) : $readscopes;
             $readtools = site_policy::describe_tools($profile, $readscopes);
             $writetools = array_values(array_diff(site_policy::describe_tools($profile, $allscopes), $readtools));
             $profiles[] = [
@@ -160,6 +222,19 @@ final class consent_page implements \renderable, \templatable {
                 'hasreadtools' => !empty($readtools),
                 'writetools' => array_map(static fn($title) => ['title' => (string) $title], $writetools),
                 'haswritetools' => !empty($writetools),
+            ];
+        }
+
+        $areas = [];
+        $ticked = self::previous_areas($request, (int) $this->user->id);
+        foreach (self::offered_areas($request, (int) $this->user->id, $this->profiles, $canwrite) as $area => $titles) {
+            $areas[] = [
+                'value' => $area,
+                'id' => 'pc-area-' . $area,
+                'label' => get_string('consent_area_' . $area, $component),
+                'description' => get_string('consent_area_' . $area . '_desc', $component),
+                'checked' => in_array($area, $ticked, true),
+                'tools' => array_map(static fn($title) => ['title' => (string) $title], $titles),
             ];
         }
 
@@ -185,6 +260,8 @@ final class consent_page implements \renderable, \templatable {
             'actionurl' => $this->action->out(false),
             'sesskey' => sesskey(),
             'profiles' => $profiles,
+            'areas' => $areas,
+            'hasareas' => !empty($areas),
             'canwrite' => $canwrite,
             'siteapproval' => $canwrite && self::needs_site_approval($request),
             'datanotice' => $provider !== ''

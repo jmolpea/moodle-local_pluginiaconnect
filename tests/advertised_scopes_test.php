@@ -209,8 +209,16 @@ final class advertised_scopes_test extends \advanced_testcase {
         foreach ($advertised as $name) {
             $this->assertTrue(scope::is_valid($name), $name);
         }
-        // Every scope of the catalogue has a tool, so with everything on everything is advertised.
-        $this->assertSame(scope::all(), $advertised);
+        // With everything on, every scope that has a tool is advertised, with the four of the baseline. A scope
+        // with no tool on this site (extensions.write, or extensions.read without a Pluginia plugin) is not.
+        $withtools = array_unique(array_merge(scope::BASELINE, array_map(
+            static fn($class) => $class::requirement()->scope,
+            array_values(tool_registry::all())
+        )));
+        $this->assertSame(array_values(array_intersect(scope::all(), $withtools)), $advertised);
+        $this->assertContains('reports.read', $advertised);
+        $this->assertContains('forums.write', $advertised);
+        $this->assertNotContains('extensions.write', $advertised);
     }
 
     public function test_a_change_of_the_tool_matrix_applies_on_the_next_request(): void {

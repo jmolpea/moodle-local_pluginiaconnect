@@ -132,7 +132,8 @@ final class health_test extends \advanced_testcase {
         $results = health::run();
         $ids = array_column($results, 'id');
         $this->assertSame(
-            ['state', 'https', 'sodium', 'authheader', 'pathinfo', 'wellknown', 'cache', 'cron', 'clock', 'proxy', 'gateway'],
+            ['state', 'https', 'sodium', 'authheader', 'pathinfo', 'wellknown', 'cache', 'cron', 'clock', 'proxy', 'gateway',
+                'extensions'],
             $ids
         );
         foreach ($results as $result) {
