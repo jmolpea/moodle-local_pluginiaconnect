@@ -281,7 +281,11 @@ final class mcp_block_c_test extends \advanced_testcase {
             'event', 'event_name', 'component', 'action', 'target', 'crud', 'activity_id', 'activity_name', 'origin']));
         // The non-editing teacher of group one sees only group one.
         $data = $this->data($this->groupteacher, 'get_course_activity_log', $args);
-        $this->assertSame([(int) $this->one->id], array_values(array_unique(array_column($data['events'], 'user_id'))));
+        // Only members of group one: Ana and the two teachers, whose calls of this test the log may hold already.
+        $seen = array_values(array_unique(array_column($data['events'], 'user_id')));
+        $this->assertContains((int) $this->one->id, $seen);
+        $this->assertNotContains((int) $this->two->id, $seen);
+        $this->assertSame([], array_diff($seen, [(int) $this->one->id, (int) $this->groupteacher->id, (int) $this->teacher->id]));
         $this->assertSame('not_found', $this->run_tool(
             $this->groupteacher,
             'get_course_activity_log',
