@@ -157,7 +157,9 @@ final class mcp_block_c_test extends \advanced_testcase {
         $forumgenerator->create_post(['discussion' => $this->discussion->id, 'userid' => $this->two->id,
             'parent' => $this->discussion->firstpost, 'message' => '<p>Friday.</p>']);
 
-        // Log rows: views of the page, a sign-in, an anonymous event and a course view, with an address.
+        // Log rows: views of the page, a sign-in, an anonymous event and a course view, with an address. The events of
+        // the set-up above may have reached the log already (it depends on the database): only these rows count.
+        $DB->delete_records($this->log);
         $this->log_event($this->one, 'r', $this->page->cmid, '\\mod_page\\event\\course_module_viewed', time() - HOURSECS);
         $this->log_event($this->one, 'r', $this->page->cmid, '\\mod_page\\event\\course_module_viewed', time() - 1800);
         $this->log_event($this->two, 'r', $this->page->cmid, '\\mod_page\\event\\course_module_viewed', time() - 1800);
